@@ -285,7 +285,7 @@ invites people to publish as evidence.
 
 ```
 HTTPStatusError: Client error '429 Too Many Requests' for url
-'https://generativelanguage.googleapis.com/v1beta/models/...?key=AQ.Ab8RN6...'
+'https://generativelanguage.googleapis.com/v1beta/models/...?key=<your real key>'
 ```
 
 Send it as a header (`x-goog-api-key`), and scrub error text before it reaches disk. The

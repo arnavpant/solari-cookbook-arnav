@@ -207,7 +207,7 @@ python scripts/run.py --agent oracle --tasks all
 python -m cubicle.report                 # -> report.html
 ```
 
-`pytest` runs 143 tests with no network and no credit: seeds, graders, the harness and
+`pytest` runs 146 tests with no network and no credit: seeds, graders, the harness and
 the action parser are all exercised against an in-memory fake desktop.
 
 ## Gotchas

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cubicle results</title>
+<style>
+:root {
+  color-scheme: light;
+  --surface: #fcfcfb;
+  --surface-sunk: #f2f1ee;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #7a7873;
+  --rule: #e0dfda;
+  --series: #2a78d6;
+  --track: #eceae5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface: #1a1a19;
+    --surface-sunk: #232322;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8f8e86;
+    --rule: #35342f;
+    --series: #3987e5;
+    --track: #2a2a28;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #1a1a19;
+  --surface-sunk: #232322;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #8f8e86;
+  --rule: #35342f;
+  --series: #3987e5;
+  --track: #2a2a28;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 48px 24px 72px;
+  background: var(--surface); color: var(--text-primary);
+  font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 980px; margin: 0 auto; }
+h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -0.02em; }
+.sub { color: var(--text-secondary); margin: 0 0 36px; font-size: 16px; }
+h2 { font-size: 17px; margin: 40px 0 4px; letter-spacing: -0.01em; }
+.note { color: var(--text-muted); font-size: 13px; margin: 0 0 18px; }
+figure { margin: 0; }
+.wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 7px 10px; text-align: left; border-bottom: 1px solid var(--rule); }
+th { color: var(--text-secondary); font-weight: 600; font-size: 12px;
+     text-transform: uppercase; letter-spacing: 0.04em; }
+td.num { font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px;
+        font-size: 12px; font-weight: 600; border: 1px solid var(--rule); }
+.pass { color: #0a6b3d; border-color: #0a6b3d55; }
+:root[data-theme="dark"] .pass, :root:not([data-theme="light"]) .pass { color: #45c08a; }
+.reason { color: var(--text-muted); font-size: 13px; }
+footer { margin-top: 46px; padding-top: 18px; border-top: 1px solid var(--rule);
+         color: var(--text-muted); font-size: 13px; }
+code { background: var(--surface-sunk); padding: 1px 5px; border-radius: 4px;
+       font-size: 13px; }
+</style></head>
+<body><main>
+<h1>cubicle</h1>
+<p class="sub">A computer-use benchmark for software that has no API.
+GnuCash on a Solari cloud desktop, driven only through pixels, keyboard and mouse.</p>
+
+<h2>Tasks passed</h2>
+<p class="note">Out of 7 bookkeeping tasks. Every score is a SQL assertion
+over the book GnuCash itself wrote - no model judged anything.</p>
+<figure><svg viewBox="0 0 980 88" width="100%" height="88" role="img" aria-label="Tasks passed by agent" font-family="inherit"><text x="188" y="18.0" text-anchor="end" font-size="14" fill="var(--text-primary)">oracle</text><rect x="200" y="0" width="520" height="26" rx="4" fill="var(--track)"/><path d="M200,0 H716.0 Q720.0,0 720.0,4.0 V22.0 Q720.0,26 716.0,26 H200 Z" fill="var(--series)"><title>oracle: 7 of 7 tasks passed</title></path><text x="732" y="18.0" font-size="14" font-variant-numeric="tabular-nums" fill="var(--text-primary)">7/7</text><text x="778" y="18.0" font-size="11" fill="var(--text-muted)">reference - proves solvable</text><text x="188" y="48.0" text-anchor="end" font-size="14" fill="var(--text-primary)">deepseek-v4-flash-vision-exp</text><rect x="200" y="30" width="520" height="26" rx="4" fill="var(--track)"/><text x="732" y="48.0" font-size="14" font-variant-numeric="tabular-nums" fill="var(--text-primary)">0/7</text><text x="188" y="78.0" text-anchor="end" font-size="14" fill="var(--text-primary)">Pinetree-CUA</text><rect x="200" y="60" width="520" height="26" rx="4" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.75"/><text x="732" y="78.0" font-size="13" fill="var(--text-muted)">untested</text></svg></figure>
+
+<h2>Per task</h2>
+<p class="note">The oracle row is the proof the suite is solvable at all.</p>
+<div class="wrap"><table><thead><tr><th>Agent</th><th>t01</th><th>t02</th><th>t03</th><th>t04</th><th>t05</th><th>t06</th><th>t07</th></tr></thead><tbody><tr><td>oracle</td><td><span class="pill pass">pass</span></td><td><span class="pill pass">pass</span></td><td><span class="pill pass">pass</span></td><td><span class="pill pass">pass</span></td><td><span class="pill pass">pass</span></td><td><span class="pill pass">pass</span></td><td><span class="pill pass">pass</span></td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td><span class="pill">timeout</span></td><td><span class="pill">timeout</span></td><td><span class="pill">timeout</span></td><td><span class="pill">timeout</span></td><td><span class="pill">timeout</span></td><td><span class="pill">timeout</span></td><td><span class="pill">timeout</span></td></tr></tbody></table></div>
+
+<h2>Every run</h2>
+<p class="note">Failures name the assertion that failed, so a result is diagnosable
+without watching a replay.</p>
+<div class="wrap"><table><thead><tr><th>Agent</th><th>Task</th><th>Outcome</th><th>Steps</th><th>Model time</th><th>Why it failed</th></tr></thead><tbody><tr><td>oracle</td><td>t01</td><td><span class="pill pass">pass</span></td><td class="num">1/15</td><td class="num">10s</td><td class="reason"></td></tr><tr><td>oracle</td><td>t02</td><td><span class="pill pass">pass</span></td><td class="num">1/15</td><td class="num">13s</td><td class="reason"></td></tr><tr><td>oracle</td><td>t03</td><td><span class="pill pass">pass</span></td><td class="num">1/15</td><td class="num">12s</td><td class="reason"></td></tr><tr><td>oracle</td><td>t04</td><td><span class="pill pass">pass</span></td><td class="num">1/30</td><td class="num">24s</td><td class="reason"></td></tr><tr><td>oracle</td><td>t05</td><td><span class="pill pass">pass</span></td><td class="num">1/30</td><td class="num">10s</td><td class="reason"></td></tr><tr><td>oracle</td><td>t06</td><td><span class="pill pass">pass</span></td><td class="num">1/30</td><td class="num">16s</td><td class="reason"></td></tr><tr><td>oracle</td><td>t07</td><td><span class="pill pass">pass</span></td><td class="num">1/30</td><td class="num">13s</td><td class="reason"></td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t01</td><td><span class="pill">timeout</span></td><td class="num">15/15</td><td class="num">34s</td><td class="reason">no account named &#x27;Software Subscriptions&#x27; exists</td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t02</td><td><span class="pill">timeout</span></td><td class="num">15/15</td><td class="num">70s</td><td class="reason">no transaction described &#x27;Printer paper&#x27;</td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t03</td><td><span class="pill">timeout</span></td><td class="num">15/15</td><td class="num">31s</td><td class="reason">an account named &#x27;Misc&#x27; still exists</td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t04</td><td><span class="pill">timeout</span></td><td class="num">30/30</td><td class="num">104s</td><td class="reason">no transaction described &#x27;Utilities March&#x27;</td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t05</td><td><span class="pill">timeout</span></td><td class="num">30/30</td><td class="num">80s</td><td class="reason">Technology split is 25000/100, expected 52000/100</td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t06</td><td><span class="pill">timeout</span></td><td class="num">30/30</td><td class="num">130s</td><td class="reason">March transactions not cleared: Cloud hosting, Electric bill, Laptop stand, March paper order, Stationery, Wat</td></tr><tr><td>deepseek-v4-flash-vision-exp</td><td>t07</td><td><span class="pill">timeout</span></td><td class="num">30/30</td><td class="num">161s</td><td class="reason">parent is &#x27;Expenses&#x27;, expected &#x27;Technology&#x27;</td></tr></tbody></table></div>
+
+<footer>
+Grading reads the GnuCash SQLite book with <code>sqlite3</code> and nothing else.
+No LLM judge, no screenshot diffing, no human review. Agents receive pixels, mouse and
+keyboard - the clipboard, shell and filesystem are deliberately outside the action space.
+</footer>
+</main></body></html>

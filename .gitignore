@@ -16,3 +16,4 @@ backend-*.png
 probe-screen.png
 cubicle.egg-info/
 results/
+debug-*.png
