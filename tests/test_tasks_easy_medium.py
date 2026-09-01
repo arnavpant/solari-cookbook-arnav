@@ -247,3 +247,33 @@ def test_t07_rejects_delete_and_recreate_under_technology():
     add_account(con, "Software Subscriptions", "Expenses")
     v = T07.grade(path_of(con))
     assert not v.passed and "2 accounts" in v.reason
+
+
+# ------------------------------------------------- prompt / grader agreement
+
+def test_t06_prompt_asks_for_what_the_grader_actually_accepts():
+    """Regression. The grader was retargeted from reconciled ('y') to cleared ('c')
+    because the register's R column cannot produce 'y', but an earlier edit to the
+    PROMPT silently failed. The task then told the agent to 'reconcile' while the
+    grader accepted 'clear' - an agent following the prompt literally would hunt for
+    the Reconcile dialog and fail, while the oracle clicking R passed. A task whose
+    prompt and grader disagree is not a fair test."""
+    prompt = T06.prompt.lower()
+    assert "cleared" in prompt
+    assert "reconcil" not in prompt
+
+
+def test_every_prompt_tells_the_agent_how_to_finish():
+    """Agents only stop when they emit done; a prompt that never says so wastes the
+    whole step budget."""
+    for task in TASKS.values():
+        assert "done action" in task.prompt, f"{task.task_id} never mentions the done action"
+
+
+def test_every_task_has_a_recorded_oracle():
+    """A NotImplementedError oracle means the task was never proven solvable."""
+    import inspect
+
+    for task in TASKS.values():
+        src = inspect.getsource(task.oracle)
+        assert "NotImplementedError" not in src, f"{task.task_id} has no recorded oracle"

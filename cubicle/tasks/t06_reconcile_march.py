@@ -21,9 +21,10 @@ from cubicle.types import Task, Verdict
 
 PROMPT = (
     "In GnuCash, open the Assets:Checking account register.\n"
-    "Mark every transaction dated in March 2026 as reconciled.\n"
+    "Mark every transaction dated in March 2026 as cleared, by clicking the 'R' "
+    "column on each one so that it changes from 'n' to 'c'.\n"
     "Do NOT mark transactions from any other month.\n"
-    "When exactly the March transactions are reconciled, respond with the done action."
+    "When exactly the March transactions are cleared, respond with the done action."
 )
 
 
