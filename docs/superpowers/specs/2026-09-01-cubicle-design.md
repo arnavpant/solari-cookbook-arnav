@@ -132,20 +132,34 @@ cubicle/
     traces/<agent>/<task>/step-NNN.png
 ```
 
-**Use `SyncDesktopClient`.** The rest of the SDK is `async`; a benchmark harness has no
-concurrency needs beyond a two-slot worker pool, and sync removes a whole class of bugs.
+**Own one event loop; keep agents synchronous.** `SyncDesktopClient` is only half sync —
+verified in the SDK source, it wraps the *client* calls on a private loop but the
+`Desktop` handle it returns is async. Its own docstring says so: "the returned Desktop
+handle is async, so prefer DesktopClient when driving the control channel." Every method
+the benchmark uses (`screenshot`, `mouse.*`, `keyboard.*`, `fs.*`, `exec`, `snapshot`,
+`revert`) is a coroutine.
+
+So the harness owns a single `asyncio` loop, uses the async `DesktopClient`, and wraps it
+in a sync `CubicleDesktop` facade. `Agent.act()` stays synchronous — a one-method sync
+interface is the entire pluggability argument and must not become async.
 
 ### Run loop
 
+**Revised after the Task 1 probe.** `snapshot()` works but `revert()` fails with
+`GatewayError: Not revertable`, and `create(fromSnapshot=...)` does not exist in the
+Python SDK. Per-task isolation is therefore done in software. See
+`docs/research/04-probe-findings.md`.
+
 ```
-setup (once per worker desktop):
+setup (once per run):
     d = client.create(template="default", cpu=1, mem_mb=2048,
-                      resolution="1280x720", record=True, lifecycle=<pause-on-idle>)
-    d.pkg.install("apt", ["gnucash"])
-    snap = d.snapshot("gnucash-clean")
+                      resolution="1280x720", record=True)
+    d.exec("sh", args=["-c", "apt-get update -qq"])          # pkg.install does NOT do this
+    d.exec("sh", args=["-c", "apt-get install -y -qq gnucash"])   # minutes, once
 
 per task:
-    d.revert(snap)                        # pristine machine, same session id
+    d.exec("sh", args=["-c",
+        "pkill gnucash; rm -rf ~/.config/gnucash ~/.local/share/gnucash; rm -f " + BOOK_PATH])
     d.fs.write(BOOK_PATH, task.seed())    # task-specific starting book
     d.open("gnucash", [BOOK_PATH])
     wait_for_gnucash_ready(d)             # see below — NOT just health.ready
@@ -344,8 +358,9 @@ Confirmed by introspecting `solari-desktop==0.2.0` and reading the docs, not ass
 
 | Fact | Consequence |
 |---|---|
-| `d.snapshot(name) -> str`, `d.revert(snapshot_id)` | Revert restores the **same** machine, same session id |
-| Docs describe a `fromSnapshot` create param; **it is absent from the Python SDK 0.2.0 `create()` signature** | Use `revert`. Do not design around forking |
+| `d.snapshot(name) -> str` works; **`d.revert(snapshot_id)` fails with `Not revertable`** | Snapshots are unusable here. Reset in software instead |
+| `create(fromSnapshot=...)` is documented but **does not exist in the Python SDK 0.2.0** | No forking, no snapshot restore. Confirmed by probe, not assumed |
+| `pkg.install` does **not** run `apt-get update`, and returns `exitCode=100` without raising | Always update first; always check `exitCode` |
 | `d.fs.read/write/list/stat/remove/mkdir` | Direct file access; no signed-URL dance needed |
 | `d.pkg.install(manager, packages)` | One-call GnuCash install |
 | `create(record=True)` | Session recording on desktops — replay links for the README |
