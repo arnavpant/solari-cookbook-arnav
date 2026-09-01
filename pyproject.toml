@@ -1,0 +1,27 @@
+[project]
+name = "cubicle"
+version = "0.1.0"
+description = "A computer-use benchmark for software that has no API"
+requires-python = ">=3.11"
+dependencies = [
+    "solari-desktop>=0.2.0",
+    "certifi",
+    "piecash>=1.2.0",
+    "google-genai",
+    "openai",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["cubicle*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: hits the real Solari API and costs credit"]
