@@ -33,11 +33,16 @@ BOOK = "/root/book.gnucash"
 # `export $(dbus-launch)` does NOT work - dbus-launch emits semicolon-separated
 # statements, so the export mangles them. dbus-run-session is the reliable form, and it
 # still writes to the same ~/.config/dconf/user the real X session reads.
+# The key is NOT under .general and is NOT called show-tip-of-the-day. Found by
+# listing the schema on a live desktop:
+#   schema org.gnucash.GnuCash.dialogs.totd, key show-at-startup
 DISABLE_TIPS = (
-    "dbus-run-session -- gsettings set org.gnucash.GnuCash.general "
-    "show-tip-of-the-day false 2>&1; "
-    "dbus-run-session -- gsettings get org.gnucash.GnuCash.general "
-    "show-tip-of-the-day 2>&1"
+    "dbus-run-session -- gsettings set org.gnucash.GnuCash.dialogs.totd "
+    "show-at-startup false 2>/dev/null "
+    "|| dbus-run-session -- gsettings set org.gnucash.dialogs.totd "
+    "show-at-startup false 2>/dev/null; "
+    "dbus-run-session -- gsettings get org.gnucash.GnuCash.dialogs.totd "
+    "show-at-startup 2>/dev/null"
 )
 
 
