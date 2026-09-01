@@ -86,6 +86,24 @@ class CubicleDesktop:
         self._run(self.d.fs.write(BOOK_PATH, seed))
         self._run(self.d.open("gnucash", [BOOK_PATH]))
         self.wait_for_gnucash_ready()
+        self.dismiss_stray_dialogs()
+
+    def dismiss_stray_dialogs(self) -> None:
+        """Close GnuCash's startup dialogs before the agent ever sees the screen.
+
+        The gsettings fix in setup_desktop.py should stop 'Tip Of The Day' appearing at
+        all; this is the belt-and-braces pass in case it survives. Closing by window
+        NAME via xdotool rather than by pixel coordinates keeps it robust if the dialog
+        moves. Any step spent dismissing chrome that the harness put there would be
+        noise in the benchmark, not signal.
+        """
+        self.exec(
+            'for w in "Tip Of The Day" "Tip of the Day"; do '
+            '  xdotool search --name "$w" windowclose 2>/dev/null; '
+            "done; true",
+            timeout_ms=30_000,
+            check=False,
+        )
 
     def wait_for_gnucash_ready(
         self, timeout_seconds: int = 120, poll_seconds: float = 2.0
