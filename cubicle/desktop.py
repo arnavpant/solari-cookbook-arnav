@@ -96,6 +96,22 @@ class CubicleDesktop:
         self._run(self.d.open("gnucash", [BOOK_PATH]))
         self.wait_for_gnucash_ready()
         self.dismiss_stray_dialogs()
+        self.maximize_gnucash()
+
+    def maximize_gnucash(self) -> None:
+        """GnuCash opens at roughly 800x700 on a 1280x720 screen, which cuts the
+        register's Withdrawal and Balance columns off the right edge entirely. An agent
+        that cannot see the amount column is being tested on the wrong thing, so every
+        task starts from a maximized window.
+        """
+        self.exec(
+            'for w in $(xdotool search --onlyvisible --name "GnuCash" 2>/dev/null); do '
+            "  xdotool windowmove $w 0 0 windowsize $w 100% 100% 2>/dev/null; "
+            "done; true",
+            timeout_ms=30_000,
+            check=False,
+        )
+        time.sleep(1.5)
 
     def dismiss_stray_dialogs(self) -> None:
         """Close GnuCash's startup dialogs before the agent ever sees the screen.

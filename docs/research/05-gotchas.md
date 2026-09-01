@@ -267,3 +267,37 @@ Listed for completeness, and labelled honestly.
 - **A paused VM does not count against the running-VM limit.**
 - **`exec` returning 200 only means the HTTP call succeeded**; the command's result is in
   `exitCode`. (Gotcha 2 is the same failure through `pkg.install`, which we did hit.)
+
+---
+
+## Application gotchas (GnuCash, not Solari)
+
+### 15. The register's date field silently truncates a four-digit year
+
+**Verified here, and the grader is what caught it.**
+
+Typing `03/14/2026` into the register's date cell stores **`2020-03-14`**. On screen the
+cell reads `03/14/20`, which next to neighbours like `04/18/26` looks like ordinary
+two-digit-year formatting rather than a six-year error.
+
+```
+typed:  03/14/2026
+stored: 2020-03-14 10:59:00
+```
+
+Type `03/14/26` instead.
+
+This is the single best argument in the project for grading against the database. The
+screen looked right. An LLM-judge scoring the screenshot would have passed it. The SQL
+assertion on `post_date` failed it immediately, with the exact reason.
+
+### 16. GnuCash opens at ~800x700 and cuts off the amount column
+
+**Verified here.** On a 1280x720 desktop the window opens roughly 803px wide, which puts
+the register's **Withdrawal** and **Balance** columns off the right edge. An agent that
+cannot see the amount column is being measured on the wrong thing, so cubicle maximizes
+the window as part of starting every task.
+
+Worth knowing: GnuCash positions its dialogs relative to the screen rather than centring
+them on the parent window, so maximizing does **not** move dialog coordinates. Oracles
+recorded before and after maximization stay valid.

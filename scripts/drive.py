@@ -92,7 +92,11 @@ async def main() -> int:
             await d.open("gnucash", [BOOK_PATH])
             await asyncio.sleep(18)
             await sh('xdotool search --name "Tip Of The Day" windowclose 2>/dev/null; true')
-            await asyncio.sleep(1)
+            # Must mirror CubicleDesktop.start_task exactly, or coordinates recorded
+            # here will not match what an agent actually sees.
+            await sh('for w in $(xdotool search --onlyvisible --name "GnuCash" 2>/dev/null); '
+                     'do xdotool windowmove $w 0 0 windowsize $w 100% 100% 2>/dev/null; done; true')
+            await asyncio.sleep(2)
             await shot("00-fresh")
 
         if args:
