@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from cubicle.fixtures.build_seed import seed_bytes
 from cubicle.grading import open_book
-from cubicle.tasks._common import check_split, check_split_count, exactly_one_txn
+from cubicle.tasks._common import check_split, check_split_count, exactly_one_txn, play
 from cubicle.types import Task, Verdict
 
 PROMPT = (
@@ -39,7 +39,22 @@ def grade(book_path: str) -> Verdict:
 
 
 def oracle(cd) -> None:
-    raise NotImplementedError("record the coordinates from a live desktop first")
+    """Recorded 2026-09-01 at 1280x720, maximized.
+
+    Invoice 1041 is dated 03/19/26, which sorts it to row y=387 in the Checking
+    register. Editing the Withdrawal cell in place is what keeps this a correction
+    rather than a second transaction.
+    """
+    from cubicle.types import Action
+
+    play(cd, [
+        (Action(kind="click", x=13, y=217), 1.2),          # expand Assets
+        (Action(kind="double_click", x=75, y=241), 3.0),   # open the Checking register
+        (Action(kind="click", x=1122, y=387), 1.0),        # Withdrawal cell, Invoice 1041
+        (Action(kind="key", text="ctrl+a"), 0.4),
+        (Action(kind="type", text="520.00"), 0.6),
+        (Action(kind="key", text="Return"), 2.5),
+    ])
 
 
 TASK = Task(

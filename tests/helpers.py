@@ -65,9 +65,9 @@ def add_account(con, name: str, parent: str, atype: str = "EXPENSE") -> str:
     return guid
 
 
-def reconcile(con, account: str, date_prefix: str) -> None:
+def reconcile(con, account: str, date_prefix: str, state: str = "c") -> None:
     con.execute(
-        "UPDATE splits SET reconcile_state = 'y' WHERE account_guid = ? AND tx_guid IN "
+        f"UPDATE splits SET reconcile_state = '{state}' WHERE account_guid = ? AND tx_guid IN "
         "(SELECT guid FROM transactions WHERE post_date LIKE ?)",
         (guid_of(con, account), f"{date_prefix}%"),
     )

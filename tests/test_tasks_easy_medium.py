@@ -172,28 +172,36 @@ T06 = TASKS["t06"]
 
 def test_t06_fails_on_untouched_book():
     v = T06.grade(path_of(fresh()))
-    assert not v.passed and "not reconciled" in v.reason
+    assert not v.passed and "not cleared" in v.reason
 
 
-def test_t06_passes_when_only_march_is_reconciled():
+def test_t06_passes_when_only_march_is_cleared():
     con = fresh()
-    reconcile(con, "Checking", "2026-03")
+    reconcile(con, "Checking", "2026-03", state="c")
+    assert T06.grade(path_of(con)).passed
+
+
+def test_t06_also_accepts_fully_reconciled():
+    """'y' is strictly stronger than 'c'; an agent that used the Reconcile dialog
+    should not be punished for it."""
+    con = fresh()
+    reconcile(con, "Checking", "2026-03", state="y")
     assert T06.grade(path_of(con)).passed
 
 
 def test_t06_rejects_reconciling_everything():
     """The fast wrong answer, and the reason the seed has non-March transactions."""
     con = fresh()
-    con.execute("UPDATE splits SET reconcile_state='y' WHERE account_guid = ?",
+    con.execute("UPDATE splits SET reconcile_state='c' WHERE account_guid = ?",
                 (guid_of(con, "Checking"),))
     con.commit()
     v = T06.grade(path_of(con))
     assert not v.passed and "outside March" in v.reason
 
 
-def test_t06_rejects_a_partial_reconcile():
+def test_t06_rejects_a_partial_clear():
     con = fresh()
-    reconcile(con, "Checking", "2026-03")
+    reconcile(con, "Checking", "2026-03", state="c")
     tx = con.execute(
         "SELECT guid FROM transactions WHERE description='Water bill'"
     ).fetchone()["guid"]
