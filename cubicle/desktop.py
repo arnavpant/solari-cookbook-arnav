@@ -47,13 +47,31 @@ class CubicleDesktop:
     def _run(self, coro):
         return self.loop.run_until_complete(coro)
 
+    def _call(self, make_coro):
+        """Run a Desktop coroutine, reconnecting once if the control channel dropped.
+
+        A model agent spends 10-25s per step thinking and rate-limiting, and Solari's
+        WebSocket control channel does not survive those gaps - it closes with 1006 and
+        every later call fails. The oracle never hit this because it finishes a task in
+        about 20 seconds. `make_coro` is a callable rather than a coroutine because a
+        coroutine cannot be awaited twice.
+        """
+        try:
+            return self._run(make_coro())
+        except Exception as exc:  # noqa: BLE001 - narrowed by message below
+            if "not connected" not in str(exc).lower() and "closed" not in str(exc).lower():
+                raise
+            time.sleep(1.0)
+            self._run(self.d.reconnect())
+            return self._run(make_coro())
+
     def exec(self, cmd: str, timeout_ms: int = 120_000, check: bool = True):
         """Run a shell command.
 
         A 200 from exec means only that the HTTP call succeeded; the command's real
         result is in exitCode. Never skip this check.
         """
-        r = self._run(self.d.exec("sh", args=["-c", cmd], timeout_ms=timeout_ms))
+        r = self._call(lambda: self.d.exec("sh", args=["-c", cmd], timeout_ms=timeout_ms))
         if check and getattr(r, "exitCode", 0) != 0:
             raise RuntimeError(
                 f"`{cmd[:60]}` exited {r.exitCode}: "
@@ -92,8 +110,8 @@ class CubicleDesktop:
 
     def start_task(self, seed: bytes) -> None:
         self.reset()
-        self._run(self.d.fs.write(BOOK_PATH, seed))
-        self._run(self.d.open("gnucash", [BOOK_PATH]))
+        self._call(lambda: self.d.fs.write(BOOK_PATH, seed))
+        self._call(lambda: self.d.open("gnucash", [BOOK_PATH]))
         self.wait_for_gnucash_ready()
         self.dismiss_stray_dialogs()
         self.maximize_gnucash()
@@ -145,7 +163,7 @@ class CubicleDesktop:
             if not seen_process:
                 seen_process = self.gnucash_running()
             if seen_process:
-                current = self._run(self.d.screenshot(format="png"))
+                current = self._call(lambda: self.d.screenshot(format="png"))
                 if previous is not None and current == previous:
                     return
                 previous = current
@@ -156,7 +174,7 @@ class CubicleDesktop:
     # ---- the agent-facing surface ---------------------------------------
 
     def screenshot(self) -> bytes:
-        return self._run(self.d.screenshot(format="png"))
+        return self._call(lambda: self.d.screenshot(format="png"))
 
     def apply(self, action: Action) -> None:
         """Mouse and keyboard only. Clipboard, exec, fs and process are deliberately
@@ -165,13 +183,13 @@ class CubicleDesktop:
         if k == "done":
             return
         if k == "click":
-            self._run(self.d.mouse.click(action.x, action.y, humanize=True))
+            self._call(lambda: self.d.mouse.click(action.x, action.y, humanize=True))
         elif k == "double_click":
-            self._run(self.d.mouse.double_click(action.x, action.y))
+            self._call(lambda: self.d.mouse.double_click(action.x, action.y))
         elif k == "type":
-            self._run(self.d.keyboard.type(action.text))
+            self._call(lambda: self.d.keyboard.type(action.text))
         elif k == "key":
-            self._run(self.d.keyboard.press(action.text))
+            self._call(lambda: self.d.keyboard.press(action.text))
         elif k == "scroll":
             # The SDK cannot express scroll direction. mouse.scroll() takes only
             # (x, y, button, humanize), and MouseButton is Literal["left","right",
@@ -181,14 +199,14 @@ class CubicleDesktop:
             # Rather than expose a one-directional scroll, move the pointer there and
             # send Page_Up/Page_Down, which GnuCash's register honours. The agent still
             # gets working directional scrolling; it just travels over the keyboard.
-            self._run(self.d.mouse.move(action.x, action.y))
+            self._call(lambda: self.d.mouse.move(action.x, action.y))
             key = "Page_Up" if action.scroll_direction == "up" else "Page_Down"
             for _ in range(max(1, min(action.scroll_amount or 1, 5))):
-                self._run(self.d.keyboard.press(key))
+                self._call(lambda: self.d.keyboard.press(key))
         elif k == "drag":
             # drag(frm: dict, to: dict, button) - NOT four positional coordinates.
-            self._run(
-                self.d.mouse.drag(
+            self._call(
+                lambda: self.d.mouse.drag(
                     {"x": action.x, "y": action.y},
                     {"x": action.to_x, "y": action.to_y},
                 )
@@ -201,4 +219,4 @@ class CubicleDesktop:
     def read_book(self) -> bytes:
         """GnuCash holds the SQLite file open; copy it inside the VM, then read the copy."""
         self.exec(f"cp {BOOK_PATH} {BOOK_COPY}")
-        return self._run(self.d.fs.read(BOOK_COPY))
+        return self._call(lambda: self.d.fs.read(BOOK_COPY))

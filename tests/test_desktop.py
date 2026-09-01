@@ -153,3 +153,49 @@ def test_reset_does_not_pkill_by_full_commandline():
 
     assert "pkill -x gnucash" in RESET_CMD
     assert "pkill -f" not in RESET_CMD
+
+
+def test_reconnects_once_when_the_control_channel_drops(loop):
+    """A model agent spends 10-25s per step thinking and rate-limiting, and Solari's
+    WebSocket does not survive those gaps - it closes with 1006 and every later call
+    fails. Gemini crashed on t01 at step 4 this way; the oracle never did, because it
+    finishes a task in ~20s."""
+    d = FakeDesktop()
+    calls = {"n": 0, "reconnects": 0}
+
+    async def flaky_screenshot(**kw):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("Control channel closed (1006)")
+        return b"FRAME"
+
+    async def reconnect():
+        calls["reconnects"] += 1
+
+    d.screenshot = flaky_screenshot
+    d.reconnect = reconnect
+    cd = CubicleDesktop(d, loop)
+
+    assert cd.screenshot() == b"FRAME"
+    assert calls["reconnects"] == 1
+    assert calls["n"] == 2
+
+
+def test_does_not_reconnect_on_an_unrelated_error(loop):
+    """Reconnecting on every failure would mask real bugs."""
+    d = FakeDesktop()
+    seen = {"reconnects": 0}
+
+    async def boom(**kw):
+        raise ValueError("something else entirely")
+
+    async def reconnect():
+        seen["reconnects"] += 1
+
+    d.screenshot = boom
+    d.reconnect = reconnect
+    cd = CubicleDesktop(d, loop)
+
+    with pytest.raises(ValueError):
+        cd.screenshot()
+    assert seen["reconnects"] == 0
