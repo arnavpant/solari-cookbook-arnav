@@ -25,3 +25,6 @@ include = ["cubicle*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = ["live: hits the real Solari API and costs credit"]
+# piecash's own SQLAlchemy model emits a wall of relationship-overlap warnings on
+# every create_book(). Noise from the library, not from us.
+filterwarnings = ["ignore:.*will copy column.*"]
