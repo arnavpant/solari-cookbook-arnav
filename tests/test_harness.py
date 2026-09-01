@@ -189,3 +189,33 @@ def test_trace_records_unparseable_replies_with_the_reason(cd, tmp_path):
     entries = [json.loads(x) for x in (tmp_path / "t00" / "actions.jsonl").read_text().splitlines()]
     assert all("action" not in e for e in entries)
     assert all("not json" in e["error"] for e in entries)
+
+
+class ThrottledAgent:
+    """The vendor refuses to answer."""
+
+    name = "throttled"
+
+    def reset(self):
+        pass
+
+    def act(self, obs):
+        from cubicle.harness import ProviderUnavailable
+
+        raise ProviderUnavailable("provider quota exhausted: RequestsPerDay=20")
+
+
+def test_provider_outage_is_not_scored_as_an_agent_failure(cd):
+    """A 429 means the vendor throttled us, not that the model is bad. Counting it as a
+    wasted step would make a model look worse for its provider's quota, and the whole
+    leaderboard dishonest."""
+    r = run_task(cd, ThrottledAgent(), make_task(lambda _p: Verdict(False, "nope")))
+    assert r.outcome == "provider_error"
+    assert "quota exhausted" in r.reason
+    assert r.unparseable_responses == 0  # not blamed on the model
+    assert r.steps_used == 0             # no step budget consumed
+
+
+def test_provider_outage_abandons_rather_than_burning_the_budget(cd):
+    r = run_task(cd, ThrottledAgent(), make_task(PASS, max_steps=30))
+    assert r.steps_used == 0

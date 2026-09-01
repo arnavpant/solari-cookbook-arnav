@@ -19,7 +19,7 @@ import pathlib
 import httpx
 
 from cubicle.agents._json_action import parse_action
-from cubicle.harness import UnparseableResponse
+from cubicle.harness import ProviderUnavailable, UnparseableResponse
 from cubicle.types import Action, Observation
 
 SYSTEM = (pathlib.Path(__file__).parent / "system_prompt.txt").read_text(encoding="utf-8")
@@ -90,6 +90,11 @@ class DeepSeekAgent:
                 headers={"Authorization": f"Bearer {self.api_key}"},
                 json=self.build_payload(obs),
             )
+            if response.status_code in (429, 402, 503):
+                raise ProviderUnavailable(
+                    f"provider unavailable (HTTP {response.status_code}): "
+                    f"{response.text[:160]}"
+                )
             response.raise_for_status()
             choice = response.json()["choices"][0]
             text = choice["message"].get("content") or ""
@@ -101,7 +106,7 @@ class DeepSeekAgent:
                     f"no content (finish_reason={reason}); the model spent its whole "
                     f"budget on reasoning - raise MAX_TOKENS"
                 )
-        except UnparseableResponse:
+        except (UnparseableResponse, ProviderUnavailable):
             raise
         except Exception as exc:  # noqa: BLE001 - a provider error is a failed step
             raise UnparseableResponse(f"{type(exc).__name__}: {str(exc)[:200]}") from exc

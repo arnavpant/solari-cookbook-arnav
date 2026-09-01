@@ -13,12 +13,13 @@ from __future__ import annotations
 
 import base64
 import pathlib
+import re
 import time
 
 import httpx
 
 from cubicle.agents._json_action import parse_action
-from cubicle.harness import UnparseableResponse
+from cubicle.harness import ProviderUnavailable, UnparseableResponse
 from cubicle.types import Action, Observation
 
 SYSTEM = (pathlib.Path(__file__).parent / "system_prompt.txt").read_text(encoding="utf-8")
@@ -29,8 +30,44 @@ SYSTEM = (pathlib.Path(__file__).parent / "system_prompt.txt").read_text(encodin
 # a per-step loop. gemini-3-flash-preview responds fast and takes inline images.
 MODEL = "gemini-3-flash-preview"
 ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
-MIN_INTERVAL_S = 6.5  # free tier is ~10 RPM; stay comfortably under it
+# Measured, not assumed: at 6.5s between calls the free tier still returned 429 on 11
+# of 15 steps. The published "10 RPM" is not what this preview model actually allows,
+# so pace conservatively and back off hard rather than burning the step budget.
+MIN_INTERVAL_S = 15.0
+FIRST_BACKOFF_S = 20.0
+MAX_BACKOFF_S = 90.0
+MAX_ATTEMPTS = 4
 KEEP_FRAMES = 3       # bounded history keeps input tokens flat across a long task
+
+
+def _redact(text: str, secret: str) -> str:
+    """Never let a key reach a trace file.
+
+    Gemini accepts the key as a `?key=` query parameter, and httpx puts the full URL
+    into HTTPStatusError. That message goes straight into actions.jsonl - which the
+    README invites people to publish as evidence. We send the key as a header instead,
+    and scrub it here as a second line of defence.
+    """
+    if secret and secret in text:
+        text = text.replace(secret, "<redacted>")
+    return re.sub(r"key=[\w.\-]+", "key=<redacted>", text)
+
+
+def _quota_message(response) -> str:
+    """Turn a 429 into something that names the actual limit.
+
+    The free tier's real constraint is a DAILY per-model cap, not a per-minute one, so
+    "rate limited" would send someone tuning a throttle that cannot help.
+    """
+    try:
+        for detail in response.json().get("error", {}).get("details", []):
+            for violation in detail.get("violations", []):
+                qid = violation.get("quotaId", "?")
+                val = violation.get("quotaValue", "?")
+                return f"provider quota exhausted: {qid}={val}"
+    except Exception:  # noqa: BLE001
+        pass
+    return "provider rate limited (HTTP 429)"
 
 
 def _extract_text(body: dict) -> str:
@@ -93,23 +130,36 @@ class GeminiAgent:
 
         self._throttle()
         try:
-            response = self._http.post(
-                ENDPOINT,
-                params={"key": self.api_key},
-                json=self.build_payload(obs),
-            )
+            response = self._post(obs)
             if response.status_code == 429:
-                # Google's 429 IS retryable, unlike Solari's. Back off once and retry.
-                time.sleep(20)
-                response = self._http.post(
-                    ENDPOINT,
-                    params={"key": self.api_key},
-                    json=self.build_payload(obs),
-                )
+                raise ProviderUnavailable(_quota_message(response))
             response.raise_for_status()
             body = response.json()
             text = _extract_text(body)
+        except (UnparseableResponse, ProviderUnavailable):
+            raise
         except Exception as exc:  # noqa: BLE001 - a provider error is a failed step
-            raise UnparseableResponse(f"{type(exc).__name__}: {str(exc)[:200]}") from exc
+            raise UnparseableResponse(
+                _redact(f"{type(exc).__name__}: {str(exc)[:200]}", self.api_key)
+            ) from exc
 
         return parse_action(text)
+
+    def _post(self, obs: Observation):
+        """POST with backoff on 429. Google's 429 IS retryable, unlike Solari's."""
+        delay = FIRST_BACKOFF_S
+        last = None
+        for attempt in range(MAX_ATTEMPTS):
+            last = self._http.post(
+                ENDPOINT,
+                headers={"x-goog-api-key": self.api_key},
+                json=self.build_payload(obs),
+            )
+            if last.status_code != 429:
+                return last
+            # Honour Retry-After when the server sends one; it knows the real quota.
+            wait = float(last.headers.get("retry-after") or delay)
+            if attempt < MAX_ATTEMPTS - 1:
+                time.sleep(min(wait, MAX_BACKOFF_S))
+                delay = min(delay * 2, MAX_BACKOFF_S)
+        return last

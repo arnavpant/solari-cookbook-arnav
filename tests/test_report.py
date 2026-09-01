@@ -67,3 +67,11 @@ def test_load_groups_by_agent(tmp_path):
     p = tmp_path / "results.json"
     p.write_text(json.dumps(_run("oracle", {"t01": "pass"})))
     assert list(load([Path(p)])) == ["oracle"]
+
+
+def test_provider_errors_are_excluded_from_the_denominator():
+    """Scoring 1/3 when two tasks never ran would understate the model."""
+    runs = {"m": _run("m", {"t01": "pass", "t02": "provider_error", "t03": "provider_error"})}
+    out = render(runs)
+    assert ">1/1<" in out
+    assert "2 unscored (provider unavailable)" in out

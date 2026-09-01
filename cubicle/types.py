@@ -12,7 +12,7 @@ from typing import Callable, Literal
 ActionKind = Literal["click", "double_click", "type", "key", "scroll", "drag", "done"]
 ACTION_KINDS = ("click", "double_click", "type", "key", "scroll", "drag", "done")
 ScrollDir = Literal["up", "down", "left", "right"]
-Outcome = Literal["pass", "wrong_state", "timeout", "crash", "corrupt"]
+Outcome = Literal["pass", "wrong_state", "timeout", "crash", "corrupt", "provider_error"]
 Tier = Literal["easy", "medium", "hard"]
 
 

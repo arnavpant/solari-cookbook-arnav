@@ -24,6 +24,16 @@ class UnparseableResponse(Exception):
     """
 
 
+class ProviderUnavailable(Exception):
+    """The provider refused to answer - rate limit, quota, or an outage.
+
+    This is NOT an agent failure and must never be scored as one. Counting a 429 as a
+    wasted step makes a model look worse because its vendor throttled us, which would
+    make the whole leaderboard dishonest. A task that hits this is abandoned and
+    reported as `provider_error`, and the report shows it as unscored rather than zero.
+    """
+
+
 def run_task(
     cd: CubicleDesktop,
     agent,
@@ -41,7 +51,12 @@ def run_task(
     def flush_trace() -> None:
         """One JSON object per step: what the agent asked for, and whether the screen
         moved. Screenshots alone cannot separate "the model clicked empty space" from
-        "the harness dropped the action"."""
+        "the harness dropped the action".
+
+        Rewritten after every step, not once at the end. A run that dies mid-task is
+        exactly when the trace matters most, and a trace only written on the happy path
+        is not there when you need it.
+        """
         if trace_dir is not None and trace_log:
             trace_dir.mkdir(parents=True, exist_ok=True)
             lines = [json.dumps(entry) for entry in trace_log]
@@ -106,12 +121,21 @@ def run_task(
             t0 = time.monotonic()
             try:
                 action = agent.act(obs)
+            except ProviderUnavailable as exc:
+                # Not the agent's fault. Abandon the task rather than burning the step
+                # budget on retries and reporting the result as if the model failed.
+                model_s += time.monotonic() - t0
+                if trace_log:
+                    trace_log[-1]["provider_error"] = str(exc)[:300]
+                    flush_trace()
+                return result("provider_error", str(exc)[:400])
             except UnparseableResponse as exc:
                 unparseable += 1
                 steps += 1
                 model_s += time.monotonic() - t0
                 if trace_log:
                     trace_log[-1]["error"] = str(exc)[:300]
+                    flush_trace()
                 continue
             model_s += time.monotonic() - t0
 
@@ -120,6 +144,7 @@ def run_task(
                 trace_log[-1]["action"] = {
                     k: v for k, v in dataclasses.asdict(action).items() if v is not None
                 }
+                flush_trace()
             if action.kind == "done":
                 hit_cap = False
                 break

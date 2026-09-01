@@ -134,11 +134,17 @@ def leaderboard_svg(rows: list[tuple[str, int, int, str]]) -> str:
                     f"<title>{html.escape(label)}: {passed} of {tot} tasks passed</title>"
                     f"</path>"
                 )
+            label_txt = f"{passed}/{tot}"
             out.append(
                 f'<text x="{LABEL_W + TRACK_W + 12}" y="{y + BAR_H / 2 + 5}" '
                 f'font-size="14" font-variant-numeric="tabular-nums" '
-                f'fill="var(--text-primary)">{passed}/{tot}</text>'
+                f'fill="var(--text-primary)">{label_txt}</text>'
             )
+            if note:
+                out.append(
+                    f'<text x="{LABEL_W + TRACK_W + 12 + 46}" y="{y + BAR_H / 2 + 5}" '
+                    f'font-size="11" fill="var(--text-muted)">{html.escape(note)}</text>'
+                )
         else:
             out.append(
                 f'<rect x="{LABEL_W}" y="{y}" width="{TRACK_W}" height="{BAR_H}" rx="4" '
@@ -200,9 +206,18 @@ def render(runs: dict[str, list[dict]]) -> str:
 
     scored = []
     for agent, results in runs.items():
-        passed = sum(1 for r in results if r["outcome"] == "pass")
-        note = "reference - proves every task is solvable" if agent == "oracle" else ""
-        scored.append((agent, passed, len(results), note))
+        # A provider outage is not an agent failure. Excluding it from the denominator
+        # keeps the score honest: a model is never punished for its vendor throttling us.
+        attempted = [r for r in results if r["outcome"] != "provider_error"]
+        skipped = len(results) - len(attempted)
+        passed = sum(1 for r in attempted if r["outcome"] == "pass")
+        if agent == "oracle":
+            note = "reference - proves every task is solvable"
+        elif skipped:
+            note = f"{skipped} unscored (provider unavailable)"
+        else:
+            note = ""
+        scored.append((agent, passed, len(attempted), note))
     scored.sort(key=lambda row: (-row[1], row[0]))
     scored.append(("Pinetree-CUA", 0, 0, "untested"))
 
