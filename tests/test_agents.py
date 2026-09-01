@@ -60,11 +60,39 @@ def test_reset_clears_history(agent):
 
 def test_agent_satisfies_the_protocol(agent):
     from cubicle.agent import Agent
+    from cubicle.agents.gemini import MODEL
+
     assert isinstance(agent, Agent)
-    assert agent.name == "gemini-2.5-flash"
+    # Reference the constant, not a literal - the model id has already had to change
+    # once (2.5-flash was retired for new keys) and a hardcoded name silently rots.
+    assert agent.name == MODEL
 
 
 def test_deepseek_shares_the_identical_prompt():
     """Per-model prompt tuning would measure prompt engineering, not agents."""
     from cubicle.agents.deepseek import SYSTEM as DEEPSEEK_SYSTEM
     assert DEEPSEEK_SYSTEM == GEMINI_SYSTEM
+
+
+def test_deepseek_budget_leaves_room_for_reasoning():
+    """Regression: at max_tokens=300 this model spent all 300 on reasoning_content and
+    returned content='' with finish_reason='length', which is indistinguishable from a
+    broken model. It needs ~200-300 reasoning tokens before it writes an answer."""
+    from cubicle.agents.deepseek import MAX_TOKENS
+
+    assert MAX_TOKENS >= 1000
+
+
+def test_deepseek_payload_carries_the_shared_prompt_and_image():
+    import base64
+
+    from cubicle.agents.deepseek import DeepSeekAgent
+
+    a = DeepSeekAgent(api_key="x")
+    a._frames = [{"type": "image_url",
+                  "image_url": {"url": "data:image/png;base64," + base64.b64encode(b"P").decode()}}]
+    payload = a.build_payload(obs())
+    assert payload["messages"][0]["content"] == GEMINI_SYSTEM
+    assert payload["temperature"] == 0.0
+    parts = payload["messages"][1]["content"]
+    assert any(p.get("type") == "image_url" for p in parts)
