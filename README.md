@@ -2,7 +2,7 @@
 
 **A computer-use benchmark for software that has no API.**
 
-GnuCash on a Solari cloud desktop. Ten bookkeeping jobs. The agent gets pixels, a mouse
+GnuCash on a Solari cloud desktop. Seven bookkeeping jobs. The agent gets pixels, a mouse
 and a keyboard — nothing else. Every score is a SQL assertion against the database the
 application itself wrote.
 
@@ -154,7 +154,7 @@ python scripts/run.py --agent oracle --tasks all
 python -m cubicle.report                 # -> report.html
 ```
 
-`pytest` runs 131 tests with no network and no credit: seeds, graders, the harness and
+`pytest` runs 143 tests with no network and no credit: seeds, graders, the harness and
 the action parser are all exercised against an in-memory fake desktop.
 
 ## Gotchas
@@ -163,22 +163,23 @@ Nineteen things that cost an afternoon if you meet them cold, with evidence for 
 an honest split between *we hit this* and *the docs say this*, are in
 [`docs/research/05-gotchas.md`](docs/research/05-gotchas.md). The worst:
 
-0. **Sending an API key as a `?key=` URL parameter leaks it into your logs.** httpx puts
+1. **Sending an API key as a `?key=` URL parameter leaks it into your logs.** httpx puts
    the full URL into `HTTPStatusError`, so the first failed call writes your key into
    whatever you log — for us, the very trace files this README invites you to publish.
    Use a header.
-
-1. **GnuCash cannot open *any* SQLite book without `libdbd-sqlite3`.** It reports
+2. **GnuCash cannot open *any* SQLite book without `libdbd-sqlite3`.** It reports
    "No suitable backend was found", which reads exactly like a corrupt file and is not.
-2. **`pkg.install` does not run `apt-get update`.** A fresh desktop has *empty* package
+3. **`pkg.install` does not run `apt-get update`.** A fresh desktop has *empty* package
    lists, so the first install of anything fails — and it returns `exitCode=100` **without
    raising**.
-3. **An empty CA store breaks only `connect()`.** Creating a desktop succeeds and every
+4. **Gemini's free tier is 20 requests per *day*, per model** — not per minute. No
+   throttle can fix it, and the guidance talks in RPM, so you tune the wrong dial.
+5. **An empty CA store breaks only `connect()`.** Creating a desktop succeeds and every
    HTTP call works, because `httpx` bundles certifi; only the WebSocket dies. Point
    `SSL_CERT_FILE` at `certifi.where()`.
-4. **`process.list()` returns every process with `name=''`.** You cannot find a process
+6. **`process.list()` returns every process with `name=''`.** You cannot find a process
    by name through the SDK. Use `pgrep`.
-5. **`pkill -f <name>` kills your own shell**, because `-f` matches the full command line
+7. **`pkill -f <name>` kills your own shell**, because `-f` matches the full command line
    and your command line mentions the thing you are killing. Use `pkill -x`.
 
 ## How it is put together
