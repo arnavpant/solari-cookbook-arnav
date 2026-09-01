@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from cubicle.fixtures.build_seed import seed_bytes
 from cubicle.grading import open_book
-from cubicle.tasks._common import check_split, check_split_count, exactly_one_txn
+from cubicle.tasks._common import check_split, check_split_count, exactly_one_txn, play
 from cubicle.types import Task, Verdict
 
 PROMPT = (
@@ -43,7 +43,49 @@ def grade(book_path: str) -> Verdict:
 
 
 def oracle(cd) -> None:
-    raise NotImplementedError("record the coordinates from a live desktop first")
+    """Recorded 2026-09-01 at 1280x720, maximized. Much the fiddliest of the suite.
+
+    Four things had to be learned the hard way:
+
+    1. Enter the TOTAL in the basic row before opening Split. Opening Split on an empty
+       row pre-fills the first split's account with the register's own account
+       (Assets:Checking), and typing there APPENDS rather than replaces - producing
+       'Expenses:Utilities:ElectricAssets:Checking' and a "create this account?" prompt.
+    2. Down does not create a new split line. GnuCash only adds the next line once the
+       current one is committed with Return.
+    3. Committing the Electric split re-sorts the transaction into date order, so the
+       split rows MOVE from y=531/555 up to y=411/435/459. The remaining 40.00 lands in
+       an auto-created Imbalance-USD split, which is the row to retarget.
+    4. Return confirms the cell but does NOT commit the transaction. The screen shows
+       'Expenses:Utilities:Water' while the database still says Imbalance-USD. Only the
+       Enter toolbar button commits. This is gotcha 10 all over again: the screen was
+       right and the data was wrong.
+    """
+    from cubicle.types import Action
+
+    play(cd, [
+        (Action(kind="click", x=13, y=217), 1.2),          # expand Assets
+        (Action(kind="double_click", x=75, y=241), 3.0),   # open the Checking register
+        (Action(kind="type", text="03/20/26"), 0.5),
+        (Action(kind="key", text="Tab"), 0.3),             # -> Num
+        (Action(kind="key", text="Tab"), 0.3),             # -> Description
+        (Action(kind="type", text="Utilities March"), 0.6),
+        (Action(kind="key", text="Tab"), 0.3),             # -> Transfer
+        (Action(kind="key", text="Tab"), 0.3),             # -> Deposit
+        (Action(kind="key", text="Tab"), 0.3),             # -> Withdrawal
+        (Action(kind="type", text="120.00"), 0.5),         # the total, before splitting
+        (Action(kind="click", x=657, y=115), 2.0),         # Split in the toolbar
+        (Action(kind="click", x=840, y=555), 0.8),         # the blank split's Account cell
+        (Action(kind="type", text="Expenses:Utilities:Electric"), 0.8),
+        (Action(kind="key", text="Tab"), 0.4),             # -> Deposit
+        (Action(kind="type", text="80.00"), 0.5),
+        (Action(kind="key", text="Return"), 2.0),          # commit split; rows re-sort
+        (Action(kind="click", x=840, y=435), 0.8),         # the Imbalance-USD Account cell
+        (Action(kind="key", text="ctrl+a"), 0.4),
+        (Action(kind="type", text="Expenses:Utilities:Water"), 0.8),
+        (Action(kind="key", text="Return"), 1.0),
+        (Action(kind="click", x=408, y=115), 2.5),         # Enter toolbar - the real commit
+    ])
 
 
 TASK = Task(
