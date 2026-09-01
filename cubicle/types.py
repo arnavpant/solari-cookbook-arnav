@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Callable, Literal
 
 ActionKind = Literal["click", "double_click", "type", "key", "scroll", "drag", "done"]
+ACTION_KINDS = ("click", "double_click", "type", "key", "scroll", "drag", "done")
 ScrollDir = Literal["up", "down", "left", "right"]
 Outcome = Literal["pass", "wrong_state", "timeout", "crash", "corrupt"]
 Tier = Literal["easy", "medium", "hard"]
@@ -41,6 +42,10 @@ class Action:
     to_y: int | None = None
 
     def __post_init__(self) -> None:
+        # typing.Literal is not enforced at runtime, so an unknown kind would otherwise
+        # sail past validation and reach the harness.
+        if self.kind not in ACTION_KINDS:
+            raise ValueError(f"unknown action kind {self.kind!r}; expected one of {ACTION_KINDS}")
         if self.kind in ("click", "double_click", "scroll", "drag"):
             if self.x is None or self.y is None:
                 raise ValueError(f"{self.kind} requires x and y")
