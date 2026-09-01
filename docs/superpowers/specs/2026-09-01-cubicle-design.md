@@ -94,7 +94,7 @@ Per-task seed deltas:
 | t05 | adds a transaction described `Invoice 1041` for `25000/100` |
 | t07 | adds account `Expenses:Software Subscriptions` (so t07 does not depend on t01) |
 | t09 | omits one of the six transactions listed in the accompanying statement |
-| t10 | the two transactions to be moved are tagged by description |
+| t10 | two transactions described `Adjustment A` and `Adjustment B` |
 
 Seeds are built programmatically rather than hand-crafted so they are reproducible and
 diffable, and so a reviewer can see exactly what an agent started from.
@@ -266,14 +266,18 @@ and `oracle(desktop)`.
    *Rationale:* Pinetree's stated specialty is "long-horizon tasks where agents run many
    steps without failing." Repetitive data entry is the cheapest honest probe of that
    claim, and drift is where these agents actually die.
-9. **reconcile_statement** — Reconcile against a six-line statement in which one
-   transaction is missing from the book; add it, then reconcile all six.
-   *Grade:* the missing transaction now exists with the right amount, and all six
-   splits are `reconcile_state='y'`.
-10. **month_end_close** — Create an account, move two existing transactions into it,
-    leave the trial balance correct.
-    *Grade:* account exists; both splits re-pointed; sum of all splits per transaction
-    still zero.
+9. **reconcile_statement** — Reconcile against a six-line bank statement, one line of
+   which has no matching transaction in the book; add the missing one, then reconcile
+   all six.
+   *Grade:* the missing transaction now exists with the right amount and date, and all
+   six splits are `reconcile_state='y'`.
+   *Note:* the statement is given as plain text **inside the task prompt**, exactly like
+   t08. No second window, no file to open. Every task in this suite delivers its data
+   through the prompt; the only thing on screen is GnuCash.
+10. **month_end_close** — Create account `Expenses:Q1 Closeout`, then move the two
+    transactions described `Adjustment A` and `Adjustment B` into it.
+    *Grade:* the account exists with the right parent; the two named transactions each
+    have exactly one split now pointing at it; no other split re-pointed.
 
 Every grader also asserts **global book integrity**: for every transaction, the splits
 sum to zero. An agent that corrupts the book fails even if it satisfied the specific
@@ -288,6 +292,16 @@ condition.
   assertion, so a failure is diagnosable without watching the replay.
 - Failures are classified: `pass`, `wrong_state`, `timeout` (step cap hit),
   `crash` (app died or session error), `corrupt` (integrity assertion failed).
+
+### What `results.json` records per (agent, task)
+
+`verdict` and `reason`; `steps_used` against `max_steps`; wall-clock split into model
+time and desktop time; count of unparseable model responses; and the Solari `sessionId`
+plus recording id so a replay can be linked from the report.
+
+Steps and timing are **recorded but not scored** (§3). They are there so a reader can
+tell a near-miss from a flail, and so the cost/latency dimension is a later analysis
+rather than a re-run.
 
 ## 9. Scoring and the leaderboard
 
