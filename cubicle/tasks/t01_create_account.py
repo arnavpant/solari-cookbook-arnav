@@ -70,6 +70,9 @@ def oracle(cd) -> None:
 TASK = Task(
     task_id="t01",
     tier="easy",
+    # cap = max(3x the oracle's 5 actions, floor). The oracle solves this with
+    # perfect foreknowledge; an agent has to look, decide and recover from mistakes,
+    # so it gets three times the moves a perfect script needs.
     max_steps=15,
     prompt=PROMPT,
     seed=lambda: seed_bytes("base"),

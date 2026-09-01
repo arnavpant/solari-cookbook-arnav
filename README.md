@@ -75,6 +75,26 @@ it, the grader is wrong.
 Seven tasks, one model, one run. The methodology is the contribution; the number is an
 illustration of it.
 
+### The step budget is not what fails an agent
+
+A zero is only interesting if the agent had room to succeed. The oracle sets the floor:
+it solves each task with perfect foreknowledge — exact coordinates, no looking, no
+mistakes — so its action count is the fewest moves the task can possibly take. **Every
+cap is at least three times that floor**, giving an agent two moves to look, backtrack or
+recover for every one a perfect script needs.
+
+| | t01 | t02 | t03 | t04 | t05 | t06 | t07 |
+|---|---|---|---|---|---|---|---|
+| oracle actions (floor) | 5 | 12 | 7 | 21 | 6 | 4 | 9 |
+| step cap | 15 | 36 | 21 | 63 | 30 | 30 | 30 |
+| headroom | 3.0x | 3.0x | 3.0x | 3.0x | 5.0x | 7.5x | 3.3x |
+
+`tests/test_step_budget.py` enforces the ratio, so an oracle that grows without its cap
+growing fails the suite rather than quietly making the benchmark harder.
+
+This mattered. t02 originally allowed 15 steps against an oracle needing 12 — three
+spare moves for an entire register entry — which made that task effectively unpassable
+for reasons that had nothing to do with vision.
 ## The interesting part: they can read, they cannot point
 
 A 0/7 is not a finding until you know *why*. So we asked the models to describe a real
