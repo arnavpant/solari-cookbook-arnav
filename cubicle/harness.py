@@ -144,6 +144,14 @@ def run_task(
                 trace_log[-1]["action"] = {
                     k: v for k, v in dataclasses.asdict(action).items() if v is not None
                 }
+                # A coordinate outside the display is a distinct kind of wrong from a
+                # coordinate that is merely in the wrong place, and worth separating in
+                # the record. The action is still applied - the harness does not correct
+                # the agent, it measures it.
+                if action.x is not None and not (
+                    0 <= action.x < 1280 and 0 <= action.y < 720
+                ):
+                    trace_log[-1]["off_screen"] = True
                 flush_trace()
             if action.kind == "done":
                 hit_cap = False

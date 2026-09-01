@@ -68,9 +68,62 @@ it, the grader is wrong.
 | Agent | Score |
 |---|---|
 | Scripted oracle | **7 / 7** — reference, proves the suite is solvable |
-| DeepSeek V4 Flash Vision | running |
+| DeepSeek V4 Flash Vision | **0 / 7** |
 | Gemini | **unscored** — see below |
 | **Pinetree-CUA** | **untested** |
+
+Seven tasks, one model, one run. The methodology is the contribution; the number is an
+illustration of it.
+
+## The interesting part: they can read, they cannot point
+
+A 0/7 is not a finding until you know *why*. So we asked the models to describe a real
+cubicle screenshot and say where things are. Ground truth is exact — the GnuCash account
+rows sit at y=217, 241 and 264, and a row is 24px tall.
+
+**Every model named every account correctly.** Reading the screen is not the problem.
+
+| | Assets | Expenses | Income | vertical scale | mean error |
+|---|---|---|---|---|---|
+| **truth** | 217 | 241 | 264 | 1.000 | — |
+| DeepSeek V4 Flash Vision | 230 | 256 | 282 | 1.106 | 15px — **0.6 rows** |
+| Gemini flash-lite | 304 | 334 | 365 | 1.298 | 94px — **3.9 rows** |
+
+The error is not noise and not a constant offset. It is a **vertical scale factor**, so
+it grows the further down the screen you look. Both models stretch the y axis.
+
+This explains the whole run. Gemini flash-lite believed Income was at y=365 and Expenses
+at y=334 — and the agent clicked **y=335**. It was not clicking at random. It was clicking
+an account row, in its own broken coordinate space.
+
+`scripts/analyze_trace.py` shows the consequence:
+
+```
+t03: 15 steps, 15 actions, 0 unparseable, screen moved 0x
+     STUCK: 14/15 clicks in the y=330-339 band
+     NOTE: the agent kept acting on a screen that never changed -
+           it never detected its own no-ops
+```
+
+In the worst case the coordinate space breaks down entirely. On `t05` — find one
+transaction in a long register — **17 of 25 clicks landed outside the 720px-tall
+screen**, the furthest at y=801. That is confined to that one task (11% of clicks across
+the whole run), but it is a different kind of wrong: not a mis-aimed click, a coordinate
+that cannot exist.
+
+Three separate deficits, and only the first is the one people usually talk about:
+
+1. **Localization.** Reading a GUI is solved. Pointing at it, to the ~10px precision a
+   24px row demands, is not.
+2. **No feedback loop.** Twelve identical clicks with an unchanged screenshot in between,
+   and neither model ever concluded that what it was doing wasn't working.
+3. **No sense of the canvas.** Clicking y=801 on a 720px screen is not a near miss.
+
+The harness applies out-of-bounds actions rather than correcting them, and records them
+as `off_screen` in the trace. It measures the agent; it does not help it.
+
+Reproduce with `python scripts/vision_probe.py <screenshot.png>`. Caveat: three rows on
+one screenshot per model. It is a sharp signal, not a measured constant.
 
 **Why Gemini is unscored.** Its free tier allows **20 requests per day, per model**
 (`GenerateRequestsPerDayPerProjectPerModel-FreeTier = 20`), and cubicle needs ~150 to
