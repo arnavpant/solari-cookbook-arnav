@@ -72,8 +72,10 @@ it, the grader is wrong.
 | Gemini | **unscored** — see below |
 | **Pinetree-CUA** | **untested** |
 
-Seven tasks, one model, one run. The methodology is the contribution; the number is an
-illustration of it.
+Seven tasks, one model, two runs. DeepSeek V4 Flash Vision and Gemini flash-lite are
+small vision models with no grounding post-training — **this is not a result about
+frontier computer-use agents**, and nothing here should be read as one. The methodology
+is the contribution; the number is an illustration of it.
 
 ### The step budget is not what fails an agent
 
@@ -95,6 +97,11 @@ growing fails the suite rather than quietly making the benchmark harder.
 This mattered. t02 originally allowed 15 steps against an oracle needing 12 — three
 spare moves for an entire register entry — which made that task effectively unpassable
 for reasons that had nothing to do with vision.
+
+Re-running DeepSeek against the raised caps changed nothing: **still 0/7**, and it
+consumed every step of every task — 36/36 on t02, 63/63 on t04. The zero is not a budget
+artifact.
+
 ## The interesting part: they can read, they cannot point
 
 A 0/7 is not a finding until you know *why*. So we asked the models to describe a real
@@ -119,36 +126,43 @@ an account row, in its own broken coordinate space.
 `scripts/analyze_trace.py` shows the consequence:
 
 ```
-t03: 15 steps, 15 actions, 0 unparseable, screen moved 0x
-     STUCK: 14/15 clicks in the y=330-339 band
-     NOTE: the agent kept acting on a screen that never changed -
-           it never detected its own no-ops
+t01: 15 steps, 14 actions, 1 unparseable, 0 provider errors, screen moved 2x
+     kinds: clickx14
+     STUCK: 12/14 clicks in the y=330-339 band; the screen moved only 2 time(s)
 ```
 
-In the worst case the coordinate space breaks down entirely. On `t05` — find one
-transaction in a long register — **17 of 25 clicks landed outside the 720px-tall
-screen**, the furthest at y=801. That is confined to that one task (11% of clicks across
-the whole run), but it is a different kind of wrong: not a mis-aimed click, a coordinate
-that cannot exist.
+That pattern is the run, not one bad task. **Five of the seven tasks** end with the agent
+locked into a ten-pixel horizontal band — y=330-339 on t01 and t03, y=300-309 on t05 and
+t06, y=420-429 on t07 — clicking repeatedly at a screen that mostly does not change.
 
-Three separate deficits, and only the first is the one people usually talk about:
+Two deficits, and only the first is the one people usually talk about:
 
 1. **Localization.** Reading a GUI is solved. Pointing at it, to the ~10px precision a
    24px row demands, is not.
-2. **No feedback loop.** Twelve identical clicks with an unchanged screenshot in between,
-   and neither model ever concluded that what it was doing wasn't working.
-3. **No sense of the canvas.** Clicking y=801 on a 720px screen is not a near miss.
+2. **No feedback loop.** Twenty-four clicks inside one 10px band on `t05`, with the
+   screen changing twice in thirty steps, and the model never concluded that what it was
+   doing wasn't working. This is the deficit a bigger step budget makes *worse*, not
+   better: given 63 steps on t04 it spent them the same way it spent 30.
 
-The harness applies out-of-bounds actions rather than correcting them, and records them
-as `off_screen` in the trace. It measures the agent; it does not help it.
+### One thing that did not reproduce
+
+An earlier run showed what looked like a third deficit: on `t05`, **17 of 25 clicks
+landed outside the 720px-tall screen**, the furthest at y=801 — not a mis-aimed click but
+a coordinate that cannot exist. It is not in the current run. The same model on the same
+tasks produced **0 out-of-bounds clicks in 198 pointer actions**.
+
+One occurrence across two runs is an anecdote, not a property of the model, and it is
+written up here as such rather than quietly dropped. The harness
+still applies out-of-bounds actions rather than correcting them, and still records them
+as `off_screen`. It measures the agent; it does not help it.
 
 Reproduce with `python scripts/vision_probe.py <screenshot.png>`. Caveat: three rows on
 one screenshot per model. It is a sharp signal, not a measured constant.
 
 **Why Gemini is unscored.** Its free tier allows **20 requests per day, per model**
 (`GenerateRequestsPerDayPerProjectPerModel-FreeTier = 20`), and cubicle needs ~150 to
-complete. A single 15-step task nearly exhausts the daily allowance; our first attempt
-lost 11 of 15 steps to HTTP 429. That is a quota limit, not a capability result, so it
+complete. A single task is 15 to 63 steps, so one task can exhaust the day's allowance
+outright; our first attempt lost 11 of 15 steps to HTTP 429. That is a quota limit, not a capability result, so it
 is reported as unscored rather than as a low score. Running Gemini here requires billing
 enabled on the Google Cloud project.
 
