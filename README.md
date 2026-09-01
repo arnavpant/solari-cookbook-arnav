@@ -256,8 +256,8 @@ than assumed. Wiping the config directories matters as much as replacing the boo
 window geometry and recent-file state leak between tasks.
 
 Design doc: [`docs/superpowers/specs/2026-09-01-cubicle-design.md`](docs/superpowers/specs/2026-09-01-cubicle-design.md).
-Research notes, including the competitive landscape and verified Solari API surface, are
-in [`docs/research/`](docs/research/).
+Research notes — the verified Solari API surface, the probe findings behind it and the
+gotchas — are in [`docs/research/`](docs/research/).
 
 ## Built with
 

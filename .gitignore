@@ -17,3 +17,6 @@ probe-screen.png
 cubicle.egg-info/
 results/
 debug-*.png
+
+# private working notes - keep these outside the tree
+/private-notes/
