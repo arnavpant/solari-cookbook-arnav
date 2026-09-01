@@ -6,6 +6,8 @@ wrote and runs SQL over it.
 
 from __future__ import annotations
 
+import dataclasses
+import json
 import time
 from pathlib import Path
 
@@ -33,6 +35,19 @@ def run_task(
     unparseable = 0
     model_s = 0.0
     desktop_s = 0.0
+    trace_log: list[dict] = []
+    previous_shot: bytes | None = None
+
+    def flush_trace() -> None:
+        """One JSON object per step: what the agent asked for, and whether the screen
+        moved. Screenshots alone cannot separate "the model clicked empty space" from
+        "the harness dropped the action"."""
+        if trace_dir is not None and trace_log:
+            trace_dir.mkdir(parents=True, exist_ok=True)
+            lines = [json.dumps(entry) for entry in trace_log]
+            (trace_dir / "actions.jsonl").write_text(
+                "\n".join(lines) + "\n", encoding="utf-8"
+            )
 
     def result(outcome: str, reason: str) -> TaskResult:
         return TaskResult(
@@ -73,6 +88,11 @@ def run_task(
             if trace_dir is not None:
                 trace_dir.mkdir(parents=True, exist_ok=True)
                 (trace_dir / f"step-{step:03d}.png").write_bytes(shot)
+                # Screenshots alone cannot tell "the model clicked empty space" from
+                # "the harness dropped the action". Record what was actually asked for.
+                screen_changed = previous_shot is not None and shot != previous_shot
+                trace_log.append({"step": step, "screen_changed_since_last": screen_changed})
+            previous_shot = shot
 
             obs = Observation(
                 screenshot_png=shot,
@@ -86,14 +106,20 @@ def run_task(
             t0 = time.monotonic()
             try:
                 action = agent.act(obs)
-            except UnparseableResponse:
+            except UnparseableResponse as exc:
                 unparseable += 1
                 steps += 1
                 model_s += time.monotonic() - t0
+                if trace_log:
+                    trace_log[-1]["error"] = str(exc)[:300]
                 continue
             model_s += time.monotonic() - t0
 
             steps += 1
+            if trace_log:
+                trace_log[-1]["action"] = {
+                    k: v for k, v in dataclasses.asdict(action).items() if v is not None
+                }
             if action.kind == "done":
                 hit_cap = False
                 break
@@ -102,6 +128,7 @@ def run_task(
             cd.apply(action)
             desktop_s += time.monotonic() - t0
 
+        flush_trace()
         verdict = grade_now()
         if verdict.passed:
             # An agent that ran out of steps but still finished the job passes. The
@@ -114,6 +141,7 @@ def run_task(
         return result("wrong_state", verdict.reason)
 
     except Exception as exc:  # noqa: BLE001 - anything unhandled here is a crash
+        flush_trace()
         message = str(exc)
         outcome = "corrupt" if "does not balance" in message else "crash"
         return result(outcome, message[:400])

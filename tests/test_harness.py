@@ -165,3 +165,27 @@ def test_traces_are_written_when_requested(cd, tmp_path):
     shots = sorted((tmp_path / "t00").glob("step-*.png"))
     assert len(shots) == 2
     assert shots[0].name == "step-000.png"
+
+
+def test_trace_records_the_action_and_whether_the_screen_moved(cd, tmp_path):
+    """Without this you cannot tell a model clicking empty space from a harness that
+    dropped the action - both look like an unchanged screenshot."""
+    import json
+
+    cd.d.frames = [b"A", b"A", b"B"]
+    agent = ScriptedAgent([Action(kind="click", x=7, y=9), Action(kind="done")])
+    run_task(cd, agent, make_task(PASS), trace_dir=tmp_path / "t00")
+
+    entries = [json.loads(x) for x in (tmp_path / "t00" / "actions.jsonl").read_text().splitlines()]
+    assert entries[0]["action"] == {"kind": "click", "x": 7, "y": 9}
+    assert entries[0]["screen_changed_since_last"] is False  # nothing before step 0
+    assert entries[1]["action"] == {"kind": "done"}
+
+
+def test_trace_records_unparseable_replies_with_the_reason(cd, tmp_path):
+    import json
+
+    run_task(cd, BabblingAgent(), make_task(PASS, max_steps=2), trace_dir=tmp_path / "t00")
+    entries = [json.loads(x) for x in (tmp_path / "t00" / "actions.jsonl").read_text().splitlines()]
+    assert all("action" not in e for e in entries)
+    assert all("not json" in e["error"] for e in entries)
