@@ -101,11 +101,22 @@ def main(argv: list[str]) -> int:
         print(ask_deepseek(b64, key), "\n")
 
     if key := os.environ.get("GEMINI_API_KEY"):
-        for model in ("gemini-3.5-flash", "gemini-flash-lite-latest"):
+        # gemini-2.5-computer-use is the one that matters: a model post-trained to
+        # ground clicks in a GUI, rather than a general vision model asked to guess.
+        # If it stretches the y axis the way the flash models do, the finding is about
+        # computer-use models and not about model size. It has free-tier quota, but a
+        # small daily one - a 429 here usually means "tomorrow", not "pay".
+        for model in ("gemini-2.5-computer-use-preview-10-2025",
+                      "gemini-3.5-flash",
+                      "gemini-flash-lite-latest"):
             print("=" * 72)
             print(f"Gemini {model}")
             print("=" * 72)
-            print(ask_gemini(b64, key, model), "\n")
+            out = ask_gemini(b64, key, model)
+            if out.startswith("[HTTP 429]"):
+                out = ("[HTTP 429] free-tier daily cap for this model is spent. "
+                       "It resets at midnight Pacific; this costs nothing to retry.")
+            print(out, "\n")
     return 0
 
 
