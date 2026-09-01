@@ -1,0 +1,30 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "click", "x": 100, "y": 302}}
+{"step": 1, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 100, "y": 303}}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 50, "y": 300}}
+{"step": 3, "screen_changed_since_last": false, "action": {"kind": "click", "x": 50, "y": 304}}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 50, "y": 300}}
+{"step": 5, "screen_changed_since_last": false, "action": {"kind": "click", "x": 8, "y": 301}}
+{"step": 6, "screen_changed_since_last": false, "action": {"kind": "click", "x": 51, "y": 105}}
+{"step": 7, "screen_changed_since_last": false, "action": {"kind": "click", "x": 90, "y": 302}}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "key", "text": "ctrl+f"}}
+{"step": 9, "screen_changed_since_last": true, "action": {"kind": "type", "text": "Invoice 1041"}}
+{"step": 10, "screen_changed_since_last": true, "action": {"kind": "click", "x": 789, "y": 798}}
+{"step": 11, "screen_changed_since_last": true, "action": {"kind": "key", "text": "Escape"}}
+{"step": 12, "screen_changed_since_last": true, "action": {"kind": "click", "x": 790, "y": 795}}
+{"step": 13, "screen_changed_since_last": true, "action": {"kind": "key", "text": "Escape"}}
+{"step": 14, "screen_changed_since_last": true, "action": {"kind": "click", "x": 788, "y": 799}}
+{"step": 15, "screen_changed_since_last": true, "action": {"kind": "click", "x": 789, "y": 796}}
+{"step": 16, "screen_changed_since_last": true, "action": {"kind": "click", "x": 790, "y": 798}}
+{"step": 17, "screen_changed_since_last": true, "action": {"kind": "click", "x": 789, "y": 797}}
+{"step": 18, "screen_changed_since_last": true, "action": {"kind": "click", "x": 792, "y": 798}}
+{"step": 19, "screen_changed_since_last": true, "action": {"kind": "click", "x": 789, "y": 801}}
+{"step": 20, "screen_changed_since_last": true, "action": {"kind": "click", "x": 791, "y": 799}}
+{"step": 21, "screen_changed_since_last": true, "action": {"kind": "click", "x": 791, "y": 797}}
+{"step": 22, "screen_changed_since_last": true, "action": {"kind": "click", "x": 789, "y": 799}}
+{"step": 23, "screen_changed_since_last": true, "action": {"kind": "click", "x": 791, "y": 798}}
+{"step": 24, "screen_changed_since_last": true, "action": {"kind": "click", "x": 791, "y": 798}}
+{"step": 25, "screen_changed_since_last": true, "action": {"kind": "click", "x": 790, "y": 799}}
+{"step": 26, "screen_changed_since_last": true, "action": {"kind": "click", "x": 788, "y": 799}}
+{"step": 27, "screen_changed_since_last": true, "action": {"kind": "click", "x": 790, "y": 800}}
+{"step": 28, "screen_changed_since_last": true, "action": {"kind": "key", "text": "Escape"}}
+{"step": 29, "screen_changed_since_last": true, "action": {"kind": "click", "x": 791, "y": 800}}

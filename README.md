@@ -241,8 +241,20 @@ python scripts/run.py --agent oracle --tasks all
 python -m cubicle.report                 # -> report.html
 ```
 
-`pytest` runs 146 tests with no network and no credit: seeds, graders, the harness and
+`pytest` runs 148 tests with no network and no credit: seeds, graders, the harness and
 the action parser are all exercised against an in-memory fake desktop.
+
+**You do not have to take the numbers on trust.** Every run's scores and traces are
+committed under [`results/`](results/) — one `actions.jsonl` per task, holding each step's
+action, its coordinates, and whether the screen changed since the previous one. Every
+claim above is re-derivable from those files without a Solari account:
+
+```bash
+python scripts/analyze_trace.py results/20260901-165209-deepseek
+```
+
+The per-step screenshots are not committed — they are large, and re-running regenerates
+them. What is committed is what the assertions are made from.
 
 ## Gotchas
 

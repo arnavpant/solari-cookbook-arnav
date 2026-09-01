@@ -1,0 +1,35 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 15,
+  "model_seconds": 10.66,
+  "desktop_seconds": 8.06,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t03",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 15,
+  "model_seconds": 12.27,
+  "desktop_seconds": 7.08,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t07",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 30,
+  "model_seconds": 13.11,
+  "desktop_seconds": 7.47,
+  "unparseable_responses": 0
+ }
+]

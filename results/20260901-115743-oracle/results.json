@@ -1,0 +1,13 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 15,
+  "model_seconds": 10.67,
+  "desktop_seconds": 8.44,
+  "unparseable_responses": 0
+ }
+]

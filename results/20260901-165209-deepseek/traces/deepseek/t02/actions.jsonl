@@ -1,0 +1,36 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "click", "x": 15, "y": 300}}
+{"step": 1, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 301}}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 23, "y": 305}}
+{"step": 3, "screen_changed_since_last": false, "action": {"kind": "click", "x": 133, "y": 100}}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 69, "y": 302}}
+{"step": 5, "screen_changed_since_last": false, "action": {"kind": "click", "x": 17, "y": 302}}
+{"step": 6, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 303}}
+{"step": 7, "screen_changed_since_last": false, "action": {"kind": "click", "x": 26, "y": 301}}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "click", "x": 13, "y": 299}}
+{"step": 9, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 294}}
+{"step": 10, "screen_changed_since_last": true, "action": {"kind": "click", "x": 33, "y": 333}}
+{"step": 11, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 304}}
+{"step": 12, "screen_changed_since_last": false, "action": {"kind": "click", "x": 11, "y": 296}}
+{"step": 13, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 301}}
+{"step": 14, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 300}}
+{"step": 15, "screen_changed_since_last": false, "action": {"kind": "click", "x": 15, "y": 334}}
+{"step": 16, "screen_changed_since_last": false, "action": {"kind": "click", "x": 20, "y": 300}}
+{"step": 17, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 333}}
+{"step": 18, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 188}}
+{"step": 19, "screen_changed_since_last": true, "action": {"kind": "click", "x": 11, "y": 221}}
+{"step": 20, "screen_changed_since_last": true, "action": {"kind": "click", "x": 14, "y": 185}}
+{"step": 21, "screen_changed_since_last": true, "action": {"kind": "click", "x": 130, "y": 104}}
+{"step": 22, "screen_changed_since_last": true, "action": {"kind": "click", "x": 16, "y": 313}}
+{"step": 23, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 80, "y": 302}}
+{"step": 24, "screen_changed_since_last": false, "action": {"kind": "click", "x": 38, "y": 226}}
+{"step": 25, "screen_changed_since_last": false, "action": {"kind": "click", "x": 128, "y": 104}}
+{"step": 26, "screen_changed_since_last": false, "action": {"kind": "click", "x": 59, "y": 332}}
+{"step": 27, "screen_changed_since_last": false, "action": {"kind": "click", "x": 17, "y": 333}}
+{"step": 28, "screen_changed_since_last": false, "action": {"kind": "click", "x": 20, "y": 301}}
+{"step": 29, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 296}}
+{"step": 30, "screen_changed_since_last": true, "error": "no content (finish_reason=length); the model spent its whole budget on reasoning - raise MAX_TOKENS"}
+{"step": 31, "screen_changed_since_last": true, "action": {"kind": "click", "x": 60, "y": 333}}
+{"step": 32, "screen_changed_since_last": false, "action": {"kind": "click", "x": 90, "y": 299}}
+{"step": 33, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 333}}
+{"step": 34, "screen_changed_since_last": false, "action": {"kind": "click", "x": 16, "y": 300}}
+{"step": 35, "screen_changed_since_last": false, "error": "no content (finish_reason=length); the model spent its whole budget on reasoning - raise MAX_TOKENS"}

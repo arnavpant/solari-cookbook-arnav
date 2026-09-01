@@ -1,0 +1,68 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 15,
+  "model_seconds": 10.81,
+  "desktop_seconds": 9.59,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t02",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 15,
+  "model_seconds": 13.09,
+  "desktop_seconds": 8.59,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t03",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 15,
+  "model_seconds": 11.88,
+  "desktop_seconds": 8.33,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t05",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 30,
+  "model_seconds": 10.51,
+  "desktop_seconds": 8.6,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t06",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 30,
+  "model_seconds": 15.72,
+  "desktop_seconds": 8.23,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t07",
+  "agent": "oracle",
+  "outcome": "pass",
+  "reason": "",
+  "steps_used": 1,
+  "max_steps": 30,
+  "model_seconds": 13.09,
+  "desktop_seconds": 8.62,
+  "unparseable_responses": 0
+ }
+]

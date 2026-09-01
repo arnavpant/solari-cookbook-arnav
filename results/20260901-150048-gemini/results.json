@@ -1,0 +1,13 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "gemini-3-flash-preview",
+  "outcome": "crash",
+  "reason": "Control channel closed (1006)",
+  "steps_used": 4,
+  "max_steps": 15,
+  "model_seconds": 87.76,
+  "desktop_seconds": 10.05,
+  "unparseable_responses": 1
+ }
+]

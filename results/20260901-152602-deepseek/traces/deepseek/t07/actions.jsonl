@@ -1,0 +1,30 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "click", "x": 16, "y": 333}}
+{"step": 1, "screen_changed_since_last": false, "action": {"kind": "click", "x": 16, "y": 329}}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 20, "y": 333}}
+{"step": 3, "screen_changed_since_last": false, "action": {"kind": "click", "x": 16, "y": 335}}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "click", "x": 12, "y": 331}}
+{"step": 5, "screen_changed_since_last": false, "action": {"kind": "click", "x": 14, "y": 337}}
+{"step": 6, "screen_changed_since_last": false, "action": {"kind": "click", "x": 15, "y": 332}}
+{"step": 7, "screen_changed_since_last": false, "action": {"kind": "click", "x": 11, "y": 331}}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "click", "x": 11, "y": 250}}
+{"step": 9, "screen_changed_since_last": true, "action": {"kind": "click", "x": 150, "y": 411}}
+{"step": 10, "screen_changed_since_last": true, "error": "unknown action kind 'right_click'; expected one of ('click', 'double_click', 'type', 'key', 'scroll', 'drag', 'done'): '{\"kind\":\"right_click\",\"x\":110,\"y\":426}'"}
+{"step": 11, "screen_changed_since_last": false, "action": {"kind": "click", "x": 181, "y": 424}}
+{"step": 12, "screen_changed_since_last": false, "error": "no content (finish_reason=length); the model spent its whole budget on reasoning - raise MAX_TOKENS"}
+{"step": 13, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 100, "y": 423}}
+{"step": 14, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 100, "y": 426, "to_x": 100, "to_y": 463}}
+{"step": 15, "screen_changed_since_last": false, "action": {"kind": "click", "x": 200, "y": 423}}
+{"step": 16, "screen_changed_since_last": false, "action": {"kind": "click", "x": 130, "y": 425}}
+{"step": 17, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 125, "y": 420, "to_x": 87, "to_y": 462}}
+{"step": 18, "screen_changed_since_last": true, "action": {"kind": "drag", "x": 150, "y": 421, "to_x": 150, "to_y": 461}}
+{"step": 19, "screen_changed_since_last": false, "action": {"kind": "click", "x": 132, "y": 423}}
+{"step": 20, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 200, "y": 341, "to_x": 200, "to_y": 362}}
+{"step": 21, "screen_changed_since_last": true, "action": {"kind": "drag", "x": 100, "y": 426, "to_x": 100, "to_y": 460}}
+{"step": 22, "screen_changed_since_last": false, "action": {"kind": "click", "x": 100, "y": 421}}
+{"step": 23, "screen_changed_since_last": false, "action": {"kind": "click", "x": 100, "y": 421}}
+{"step": 24, "screen_changed_since_last": false, "action": {"kind": "click", "x": 100, "y": 417}}
+{"step": 25, "screen_changed_since_last": false, "error": "unknown action kind 'right_click'; expected one of ('click', 'double_click', 'type', 'key', 'scroll', 'drag', 'done'): '{\"kind\":\"right_click\",\"x\":500,\"y\":426}'"}
+{"step": 26, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 100, "y": 421, "to_x": 80, "to_y": 457}}
+{"step": 27, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 150, "y": 421, "to_x": 80, "to_y": 330}}
+{"step": 28, "screen_changed_since_last": true, "action": {"kind": "click", "x": 120, "y": 419}}
+{"step": 29, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 170, "y": 418, "to_x": 70, "to_y": 456}}

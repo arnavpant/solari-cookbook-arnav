@@ -1,0 +1,30 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "click", "x": 49, "y": 331}}
+{"step": 1, "screen_changed_since_last": false, "action": {"kind": "click", "x": 12, "y": 330}}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 75, "y": 333}}
+{"step": 3, "screen_changed_since_last": false, "action": {"kind": "click", "x": 11, "y": 329}}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "click", "x": 13, "y": 232}}
+{"step": 5, "screen_changed_since_last": true, "action": {"kind": "drag", "x": 100, "y": 393, "to_x": 100, "to_y": 418}}
+{"step": 6, "screen_changed_since_last": true, "action": {"kind": "drag", "x": 113, "y": 425, "to_x": 82, "to_y": 460}}
+{"step": 7, "screen_changed_since_last": false, "error": "unknown action kind 'right_click'; expected one of ('click', 'double_click', 'type', 'key', 'scroll', 'drag', 'done'): '{\"kind\":\"right_click\",\"x\":88,\"y\":424}'"}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "click", "x": 93, "y": 425}}
+{"step": 9, "screen_changed_since_last": false, "action": {"kind": "click", "x": 120, "y": 424}}
+{"step": 10, "screen_changed_since_last": false, "action": {"kind": "click", "x": 143, "y": 422}}
+{"step": 11, "screen_changed_since_last": false, "action": {"kind": "click", "x": 150, "y": 336}}
+{"step": 12, "screen_changed_since_last": true, "error": "unknown action kind 'right_click'; expected one of ('click', 'double_click', 'type', 'key', 'scroll', 'drag', 'done'): '{\"kind\":\"right_click\",\"x\":116,\"y\":423}'"}
+{"step": 13, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 100, "y": 424, "to_x": 100, "to_y": 459}}
+{"step": 14, "screen_changed_since_last": true, "action": {"kind": "drag", "x": 197, "y": 416, "to_x": 80, "to_y": 460}}
+{"step": 15, "screen_changed_since_last": false, "error": "drag requires to_x and to_y: '{\"kind\":\"drag\",\"x\":125,\"y\":420,\"to_x\":125,\"y\":459}'"}
+{"step": 16, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 144, "y": 420, "to_x": 114, "to_y": 458}}
+{"step": 17, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 200, "y": 422, "to_x": 100, "to_y": 462}}
+{"step": 18, "screen_changed_since_last": false, "action": {"kind": "click", "x": 100, "y": 423}}
+{"step": 19, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 150, "y": 422, "to_x": 150, "to_y": 446}}
+{"step": 20, "screen_changed_since_last": false, "error": "unknown action kind 'right_click'; expected one of ('click', 'double_click', 'type', 'key', 'scroll', 'drag', 'done'): '{\"kind\":\"right_click\",\"x\":100,\"y\":424}'"}
+{"step": 21, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 170, "y": 390, "to_x": 80, "to_y": 461}}
+{"step": 22, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 80, "y": 352, "to_x": 80, "to_y": 384}}
+{"step": 23, "screen_changed_since_last": true, "error": "no content (finish_reason=length); the model spent its whole budget on reasoning - raise MAX_TOKENS"}
+{"step": 24, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 100, "y": 421, "to_x": 100, "to_y": 461}}
+{"step": 25, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 100, "y": 425, "to_x": 100, "to_y": 462}}
+{"step": 26, "screen_changed_since_last": true, "action": {"kind": "drag", "x": 111, "y": 425, "to_x": 111, "to_y": 460}}
+{"step": 27, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 150, "y": 423, "to_x": 150, "to_y": 459}}
+{"step": 28, "screen_changed_since_last": false, "action": {"kind": "click", "x": 100, "y": 423}}
+{"step": 29, "screen_changed_since_last": false, "action": {"kind": "drag", "x": 200, "y": 422, "to_x": 200, "to_y": 459}}

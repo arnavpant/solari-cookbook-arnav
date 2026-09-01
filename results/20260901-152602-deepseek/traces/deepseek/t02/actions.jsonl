@@ -1,0 +1,15 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "click", "x": 15, "y": 331}}
+{"step": 1, "screen_changed_since_last": false, "action": {"kind": "click", "x": 130, "y": 103}}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 18, "y": 336}}
+{"step": 3, "screen_changed_since_last": true, "action": {"kind": "click", "x": 12, "y": 303}}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "click", "x": 11, "y": 297}}
+{"step": 5, "screen_changed_since_last": false, "action": {"kind": "click", "x": 16, "y": 333}}
+{"step": 6, "screen_changed_since_last": false, "action": {"kind": "click", "x": 60, "y": 334}}
+{"step": 7, "screen_changed_since_last": false, "action": {"kind": "click", "x": 16, "y": 333}}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 58, "y": 335}}
+{"step": 9, "screen_changed_since_last": false, "action": {"kind": "click", "x": 15, "y": 300}}
+{"step": 10, "screen_changed_since_last": false, "action": {"kind": "click", "x": 13, "y": 300}}
+{"step": 11, "screen_changed_since_last": false, "action": {"kind": "click", "x": 8, "y": 333}}
+{"step": 12, "screen_changed_since_last": false, "action": {"kind": "click", "x": 17, "y": 302}}
+{"step": 13, "screen_changed_since_last": false, "action": {"kind": "click", "x": 15, "y": 333}}
+{"step": 14, "screen_changed_since_last": false, "error": "no content (finish_reason=length); the model spent its whole budget on reasoning - raise MAX_TOKENS"}

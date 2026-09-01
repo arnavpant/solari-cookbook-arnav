@@ -1,0 +1,13 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "oracle",
+  "outcome": "crash",
+  "reason": "GnuCash did not settle within the readiness timeout",
+  "steps_used": 0,
+  "max_steps": 15,
+  "model_seconds": 0.0,
+  "desktop_seconds": 0.0,
+  "unparseable_responses": 0
+ }
+]

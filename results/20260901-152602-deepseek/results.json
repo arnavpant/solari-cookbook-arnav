@@ -1,0 +1,79 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "no account named 'Software Subscriptions' exists",
+  "steps_used": 15,
+  "max_steps": 15,
+  "model_seconds": 34.45,
+  "desktop_seconds": 16.87,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t02",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "no transaction described 'Printer paper'",
+  "steps_used": 15,
+  "max_steps": 15,
+  "model_seconds": 69.95,
+  "desktop_seconds": 13.88,
+  "unparseable_responses": 1
+ },
+ {
+  "task_id": "t03",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "an account named 'Misc' still exists",
+  "steps_used": 15,
+  "max_steps": 15,
+  "model_seconds": 31.05,
+  "desktop_seconds": 14.53,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t04",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "no transaction described 'Utilities March'",
+  "steps_used": 30,
+  "max_steps": 30,
+  "model_seconds": 104.44,
+  "desktop_seconds": 21.67,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t05",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "Technology split is 25000/100, expected 52000/100",
+  "steps_used": 30,
+  "max_steps": 30,
+  "model_seconds": 80.39,
+  "desktop_seconds": 23.75,
+  "unparseable_responses": 0
+ },
+ {
+  "task_id": "t06",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "March transactions not cleared: Cloud hosting, Electric bill, Laptop stand, March paper order, Stationery, Water bill",
+  "steps_used": 30,
+  "max_steps": 30,
+  "model_seconds": 130.25,
+  "desktop_seconds": 21.36,
+  "unparseable_responses": 1
+ },
+ {
+  "task_id": "t07",
+  "agent": "deepseek-v4-flash-vision-exp",
+  "outcome": "timeout",
+  "reason": "parent is 'Expenses', expected 'Technology'",
+  "steps_used": 30,
+  "max_steps": 30,
+  "model_seconds": 160.53,
+  "desktop_seconds": 18.53,
+  "unparseable_responses": 3
+ }
+]

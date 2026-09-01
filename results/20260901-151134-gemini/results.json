@@ -1,0 +1,13 @@
+[
+ {
+  "task_id": "t01",
+  "agent": "gemini-3-flash-preview",
+  "outcome": "timeout",
+  "reason": "no account named 'Software Subscriptions' exists",
+  "steps_used": 15,
+  "max_steps": 15,
+  "model_seconds": 347.36,
+  "desktop_seconds": 16.92,
+  "unparseable_responses": 11
+ }
+]

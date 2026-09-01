@@ -15,7 +15,9 @@ setup-verify.png
 backend-*.png
 probe-screen.png
 cubicle.egg-info/
-results/
+# run artifacts: the traces and scores ARE the evidence and are committed;
+# the per-step screenshots are not - they are large and re-derivable
+results/**/*.png
 debug-*.png
 
 # private working notes - keep these outside the tree
