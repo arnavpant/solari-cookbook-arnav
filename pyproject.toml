@@ -8,7 +8,6 @@ dependencies = [
     "certifi",
     "piecash>=1.2.0",
     "httpx",
-    "openai",
     "python-dotenv",
 ]
 

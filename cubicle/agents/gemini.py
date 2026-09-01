@@ -23,10 +23,29 @@ from cubicle.types import Action, Observation
 
 SYSTEM = (pathlib.Path(__file__).parent / "system_prompt.txt").read_text(encoding="utf-8")
 
-MODEL = "gemini-2.5-flash"
+# gemini-2.5-flash and -flash-lite return "no longer available to new users" on keys
+# issued now, even though they still appear in models.list. gemini-3.7-flash answers but
+# is a thinking model that blew a 90s timeout on a one-pixel image, which is unusable in
+# a per-step loop. gemini-3-flash-preview responds fast and takes inline images.
+MODEL = "gemini-3-flash-preview"
 ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 MIN_INTERVAL_S = 6.5  # free tier is ~10 RPM; stay comfortably under it
 KEEP_FRAMES = 3       # bounded history keeps input tokens flat across a long task
+
+
+def _extract_text(body: dict) -> str:
+    """Some Gemini models return a candidate with no `parts` at all - a thinking model
+    that spent its whole budget, or a safety stop. Fail loudly rather than KeyError."""
+    candidates = body.get("candidates") or []
+    if not candidates:
+        raise UnparseableResponse(f"no candidates in response: {str(body)[:160]}")
+    content = candidates[0].get("content") or {}
+    parts = content.get("parts") or []
+    text = "".join(p.get("text", "") for p in parts)
+    if not text.strip():
+        reason = candidates[0].get("finishReason", "unknown")
+        raise UnparseableResponse(f"empty response (finishReason={reason})")
+    return text
 
 
 class GeminiAgent:
@@ -89,7 +108,7 @@ class GeminiAgent:
                 )
             response.raise_for_status()
             body = response.json()
-            text = body["candidates"][0]["content"]["parts"][0]["text"]
+            text = _extract_text(body)
         except Exception as exc:  # noqa: BLE001 - a provider error is a failed step
             raise UnparseableResponse(f"{type(exc).__name__}: {str(exc)[:200]}") from exc
 
