@@ -6,3 +6,11 @@ __pycache__/
 .venv/
 venv/
 screenshot.png
+
+# cubicle working artifacts
+drive/
+*.log
+verify-seed.png
+setup-verify.png
+backend-*.png
+probe-screen.png
