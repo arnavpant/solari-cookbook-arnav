@@ -48,7 +48,7 @@ async def sh(d, cmd: str, timeout_ms: int = 600_000, check: bool = False):
 async def open_and_check(d, target: str, label: str) -> bool:
     """Open `target` in GnuCash and decide, from the database, whether it worked."""
     log(f"--- attempt: {label} ---")
-    await sh(d, "pkill -f gnucash 2>/dev/null; sleep 2; "
+    await sh(d, "pkill -x gnucash 2>/dev/null; sleep 2; "
                 f"rm -rf ~/.config/gnucash ~/.local/share/gnucash ~/.gnucash; rm -f {BOOK}*")
     await d.fs.write(BOOK, seed_bytes("base"))
 
@@ -100,7 +100,7 @@ async def main() -> int:
         # Quieten the desktop: Chrome auto-starts on the default template and the
         # Tip Of The Day dialog steals focus on first run.
         log("closing Chrome and disabling Tip Of The Day")
-        await sh(d, "pkill -f chrome 2>/dev/null; true")
+        await sh(d, "pkill -x chrome 2>/dev/null; true")
         await sh(d, "mkdir -p ~/.config/gnucash && "
                     "printf '[general]\\ntip-of-the-day=false\\n' "
                     "> ~/.config/gnucash/gnucash.conf; true")

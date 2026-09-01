@@ -125,3 +125,14 @@ def test_install_runs_apt_update_before_install(cd):
     assert scripts.index(next(s for s in scripts if "apt-get update" in s)) < scripts.index(
         next(s for s in scripts if "install -y -qq gnucash" in s)
     )
+
+
+def test_reset_does_not_pkill_by_full_commandline():
+    """Regression: `pkill -f gnucash` matches the FULL command line, and the reset
+    command line contains 'gnucash' (rm -f /root/book.gnucash*). The shell pkilled
+    itself and the reset exited -1 with everything after it unrun. -x matches the
+    process NAME, and the shell is 'sh', so it cannot self-match."""
+    from cubicle.desktop import RESET_CMD
+
+    assert "pkill -x gnucash" in RESET_CMD
+    assert "pkill -f" not in RESET_CMD

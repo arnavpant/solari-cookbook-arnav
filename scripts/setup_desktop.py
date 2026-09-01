@@ -81,7 +81,7 @@ async def prepare(d) -> None:
     log(f"  {(r.stdout or '').strip()}")
 
     log("closing Chrome (the default template auto-starts it over the screen)")
-    await sh(d, "pkill -f chrome 2>/dev/null; true")
+    await sh(d, "pkill -x chrome 2>/dev/null; true")
 
     log("disabling Tip Of The Day")
     r = await sh(d, DISABLE_TIPS)
@@ -95,7 +95,7 @@ async def verify(d) -> bool:
     parses perfectly. The evidence is a row in gnclock.
     """
     log("verifying: opening the seed book")
-    await sh(d, "pkill -f gnucash 2>/dev/null; sleep 2; "
+    await sh(d, "pkill -x gnucash 2>/dev/null; sleep 2; "
                 f"rm -rf ~/.local/share/gnucash; rm -f {BOOK}*")
     await d.fs.write(BOOK, seed_bytes("base"))
     await d.open("gnucash", [BOOK])

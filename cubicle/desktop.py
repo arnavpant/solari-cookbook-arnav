@@ -28,7 +28,7 @@ BOOK_COPY = "/root/book.copy.gnucash"
 # benchmark quietly stops being fair. It also drops .LCK / .log files beside the book,
 # which make it refuse to reopen the file.
 RESET_CMD = (
-    "pkill -f gnucash 2>/dev/null; sleep 1; "
+    "pkill -x gnucash 2>/dev/null; sleep 1; "
     "rm -rf ~/.config/gnucash ~/.local/share/gnucash ~/.gnucash; "
     f"rm -f {BOOK_PATH}* {BOOK_COPY}*; "
     "true"

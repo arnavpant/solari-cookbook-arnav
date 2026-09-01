@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 from cubicle.fixtures.build_seed import seed_bytes
 from cubicle.grading import account_by_name, accounts_by_name, open_book, parent_name
 from cubicle.types import Task, Verdict
@@ -41,12 +43,28 @@ def grade(book_path: str) -> Verdict:
 
 
 def oracle(cd) -> None:
-    """Scripted solution.
+    """Scripted solution, at 1280x720.
 
-    Coordinates must come from screenshots taken against a live desktop, never
-    guessed. Filled in during Task 7 Step 6.
+    Every coordinate below was read off a screenshot taken against a live desktop, not
+    guessed. Recorded 2026-09-01; verified end to end - grade() returns passed=True
+    against the book this produces.
+
+    Note step 3: clicking the 'Expenses' parent makes GnuCash narrow the Account Type
+    list from the full set down to Income/Expense, which is why the type is selected
+    after the parent and not before.
     """
-    raise NotImplementedError("record the coordinates from a live desktop first")
+    from cubicle.types import Action
+
+    steps = [
+        (Action(kind="click", x=389, y=115), 2.5),   # 'New' in the toolbar
+        (Action(kind="type", text="Software Subscriptions"), 1.0),
+        (Action(kind="click", x=410, y=643), 1.5),   # parent tree -> Expenses
+        (Action(kind="click", x=245, y=620), 1.0),   # account type -> Expense
+        (Action(kind="click", x=559, y=692), 2.5),   # OK
+    ]
+    for action, pause in steps:
+        cd.apply(action)
+        time.sleep(pause)
 
 
 TASK = Task(
