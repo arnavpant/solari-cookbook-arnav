@@ -75,3 +75,18 @@ def test_provider_errors_are_excluded_from_the_denominator():
     out = render(runs)
     assert ">1/1<" in out
     assert "2 unscored (provider unavailable)" in out
+
+
+def test_notes_fit_inside_the_viewbox():
+    """The oracle's note used to clip to 'reference - pr...' at the right edge."""
+    import re
+
+    from cubicle.report import LABEL_W, TRACK_W, leaderboard_svg
+
+    note = "reference - proves solvable"
+    svg = leaderboard_svg([("oracle", 7, 7, note)])
+    width = int(re.search(r'viewBox="0 0 (\d+)', svg).group(1))
+    note_x = max(int(x) for x in re.findall(r'<text x="(\d+)"', svg))
+    # ~6px per char at font-size 11 is a conservative advance width
+    assert note_x + len(note) * 6 <= width, "note runs past the right edge of the viewBox"
+    assert note_x > LABEL_W + TRACK_W

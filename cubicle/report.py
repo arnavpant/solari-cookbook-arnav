@@ -24,8 +24,8 @@ from pathlib import Path
 BAR_H = 26
 BAR_GAP = 4  # >= 2px surface gap between adjacent fills
 LABEL_W = 200
-TRACK_W = 620
-VALUE_W = 90
+TRACK_W = 520
+VALUE_W = 260  # room for the score AND its note, which used to clip
 
 CSS = """
 :root {
@@ -212,7 +212,7 @@ def render(runs: dict[str, list[dict]]) -> str:
         skipped = len(results) - len(attempted)
         passed = sum(1 for r in attempted if r["outcome"] == "pass")
         if agent == "oracle":
-            note = "reference - proves every task is solvable"
+            note = "reference - proves solvable"
         elif skipped:
             note = f"{skipped} unscored (provider unavailable)"
         else:
