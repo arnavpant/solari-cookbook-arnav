@@ -75,6 +75,15 @@ class CubicleDesktop:
     def gnucash_installed(self) -> bool:
         return self.exec("command -v gnucash", check=False).exitCode == 0
 
+    def gnucash_running(self) -> bool:
+        """Ask the OS, not the SDK.
+
+        `d.process.list()` returns 75 entries whose `name` is '' and whose `cmd` is
+        None - ProcessInfo(pid=1, name='', cmd=None) - so you cannot find a process by
+        name through it. pgrep works.
+        """
+        return self.exec("pgrep -x gnucash >/dev/null 2>&1", check=False).exitCode == 0
+
     # ---- per-task lifecycle ---------------------------------------------
 
     def reset(self) -> None:
@@ -118,10 +127,7 @@ class CubicleDesktop:
         seen_process = False
         while time.time() < deadline:
             if not seen_process:
-                procs = self._run(self.d.process.list())
-                seen_process = any(
-                    "gnucash" in (getattr(p, "name", "") or "") for p in procs
-                )
+                seen_process = self.gnucash_running()
             if seen_process:
                 current = self._run(self.d.screenshot(format="png"))
                 if previous is not None and current == previous:

@@ -105,10 +105,18 @@ def test_wait_for_ready_times_out_if_the_screen_never_settles(cd):
 
 
 def test_wait_for_ready_waits_for_the_gnucash_process(loop):
-    d = FakeDesktop(processes=[])
+    d = FakeDesktop()
+    d.exec_results["pgrep -x gnucash"] = ExecResult(exitCode=1)  # not running
     cd = CubicleDesktop(d, loop)
     with pytest.raises(TimeoutError):
         cd.wait_for_gnucash_ready(timeout_seconds=0, poll_seconds=0)
+
+
+def test_readiness_uses_pgrep_not_the_sdk_process_list(cd):
+    """Regression: d.process.list() returns 75 entries all with name='' and cmd=None,
+    so a process cannot be found by name through the SDK. pgrep can."""
+    cd.gnucash_running()
+    assert any(e[0] == "exec" and "pgrep -x gnucash" in e[1] for e in cd.d.log)
 
 
 def test_gnucash_installed_reports_false_when_absent(cd):

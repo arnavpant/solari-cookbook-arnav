@@ -172,6 +172,45 @@ was never opened parses perfectly.
 Two lessons, both now baked into the scripts: assert on a *positive* signal of the thing
 you care about (a `gnclock` row), and look at the screenshot.
 
+## 11. `process.list()` returns processes with no names
+
+**Verified here.** You cannot find a process by name through the SDK. Every entry comes
+back blank:
+
+```
+process.list() -> list, len 75
+first item: ProcessInfo(pid=1, name='', cmd=None)
+entries matching 'gnucash': 0
+```
+
+Meanwhile, on the same machine at the same moment:
+
+```
+$ pgrep -a gnucash
+6353 gnucash /root/book.gnucash
+```
+
+`ProcessInfo` has exactly the fields you would want - `pid`, `name`, `cmd` - and
+populates only `pid`. This cost us a 123-second readiness timeout on a desktop where
+the app had already been running for two minutes. Use `exec("pgrep -x <name>")`.
+
+## 12. `pkill -f <name>` will kill your own shell
+
+**Verified here.** `-f` matches against the *full command line*, and the command line
+you are running usually mentions the thing you are killing:
+
+```sh
+sh -c "pkill -f gnucash; rm -f /root/book.gnucash*"
+#              ^^^^^^^                 ^^^^^^^ the shell matches its own pattern
+```
+
+The shell kills itself, `exec` returns `exitCode -1`, and every command after the
+`pkill` silently never runs. Worse, it can look like it worked: our reset appeared fine
+because the next step overwrote the book anyway.
+
+Use `pkill -x <name>`, which matches the process *name* exactly - your shell is `sh`,
+so it cannot match itself.
+
 ---
 
 ## Repeated from Solari's own docs, not independently verified
