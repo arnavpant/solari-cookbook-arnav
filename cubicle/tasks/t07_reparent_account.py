@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from cubicle.fixtures.build_seed import seed_bytes
 from cubicle.grading import accounts_by_name, open_book, parent_name
+from cubicle.tasks._common import play
 from cubicle.types import Task, Verdict
 
 PROMPT = (
@@ -46,7 +47,26 @@ def grade(book_path: str) -> Verdict:
 
 
 def oracle(cd) -> None:
-    raise NotImplementedError("record the coordinates from a live desktop first")
+    """Recorded 2026-09-01 at 1280x720.
+
+    The Parent Account tree in the Edit dialog is only about three rows tall, so the
+    target is almost always below the fold. Clicking the disclosure triangle to expand
+    and then walking down with the arrow key is far more robust than trying to click a
+    row that may not be visible - the tree auto-scrolls to keep the selection in view.
+    """
+    from cubicle.types import Action
+
+    play(cd, [
+        (Action(kind="click", x=13, y=241), 1.5),    # expand Expenses in the main tree
+        (Action(kind="click", x=110, y=310), 1.0),   # select 'Software Subscriptions'
+        (Action(kind="click", x=295, y=115), 2.5),   # Edit in the toolbar
+        (Action(kind="click", x=352, y=643), 1.2),   # expand Expenses in the parent tree
+        (Action(kind="key", text="Down"), 0.4),      # Misc
+        (Action(kind="key", text="Down"), 0.4),      # Office Supplies
+        (Action(kind="key", text="Down"), 0.4),      # Software Subscriptions
+        (Action(kind="key", text="Down"), 0.6),      # Technology
+        (Action(kind="click", x=559, y=692), 2.5),   # OK
+    ])
 
 
 TASK = Task(

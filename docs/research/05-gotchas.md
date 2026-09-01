@@ -211,6 +211,47 @@ because the next step overwrote the book anyway.
 Use `pkill -x <name>`, which matches the process *name* exactly - your shell is `sh`,
 so it cannot match itself.
 
+## 13. `mouse.scroll()` cannot express a direction
+
+**Verified here.** The signature is:
+
+```python
+async def scroll(self, x: int, y: int, *, button: Optional[MouseButton] = None,
+                 humanize: Optional[bool] = None) -> None
+```
+
+No direction. No amount. And direction cannot be smuggled through `button`, because:
+
+```python
+MouseButton = Literal["left", "right", "middle"]
+_BUTTON_CODES = {"left": 1, "middle": 2, "right": 3}
+```
+
+X11 encodes wheel-up and wheel-down as buttons 4 and 5, and neither is reachable - the
+type does not admit them and `_button_to_code` would raise. So "scroll up" is
+unrepresentable through the typed API.
+
+cubicle's workaround: move the pointer to the target, then send `Page_Up` / `Page_Down`,
+which GnuCash's register honours. Agents keep working directional scrolling; it just
+travels over the keyboard.
+
+## 14. `mouse.drag()` takes two dicts, not four coordinates
+
+**Verified here.** Not `drag(x, y, to_x, to_y)`, which is the obvious guess and what we
+originally wrote:
+
+```python
+async def drag(self, frm: Dict[str, int], to: Dict[str, int],
+               button: MouseButton = "left") -> None
+```
+
+Call it as `drag({"x": 1, "y": 2}, {"x": 8, "y": 9})`.
+
+Related, and documented in the SDK's own source: named buttons are converted to X11
+integer codes before going on the wire, because "without this the wire carries a raw
+string and the guest's JSON decode fails with `cannot unmarshal string into ... button
+of type int`". Worth knowing if you ever hand-roll the HTTP call.
+
 ---
 
 ## Repeated from Solari's own docs, not independently verified

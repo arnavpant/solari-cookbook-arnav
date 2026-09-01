@@ -40,11 +40,16 @@ class FakeMouse:
     async def double_click(self, x, y, **kw) -> None:
         self.log.append(("double_click", x, y))
 
-    async def scroll(self, x, y, **kw) -> None:
-        self.log.append(("scroll", x, y, kw.get("direction"), kw.get("amount")))
+    async def move(self, x, y, **kw) -> None:
+        self.log.append(("move", x, y))
 
-    async def drag(self, x, y, to_x, to_y, **kw) -> None:
-        self.log.append(("drag", x, y, to_x, to_y))
+    async def scroll(self, x, y, *, button=None, humanize=None) -> None:
+        # Real signature: no direction, no amount. Kept here so a test cannot pass
+        # against a fake that is friendlier than the API.
+        self.log.append(("scroll", x, y))
+
+    async def drag(self, frm, to, button="left") -> None:
+        self.log.append(("drag", frm["x"], frm["y"], to["x"], to["y"]))
 
 
 class FakeKeyboard:

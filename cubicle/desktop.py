@@ -157,16 +157,26 @@ class CubicleDesktop:
         elif k == "key":
             self._run(self.d.keyboard.press(action.text))
         elif k == "scroll":
+            # The SDK cannot express scroll direction. mouse.scroll() takes only
+            # (x, y, button, humanize), and MouseButton is Literal["left","right",
+            # "middle"] mapped to X11 codes 1/2/3 - there is no wheel code (4/5), so
+            # "scroll up" is unrepresentable.
+            #
+            # Rather than expose a one-directional scroll, move the pointer there and
+            # send Page_Up/Page_Down, which GnuCash's register honours. The agent still
+            # gets working directional scrolling; it just travels over the keyboard.
+            self._run(self.d.mouse.move(action.x, action.y))
+            key = "Page_Up" if action.scroll_direction == "up" else "Page_Down"
+            for _ in range(max(1, min(action.scroll_amount or 1, 5))):
+                self._run(self.d.keyboard.press(key))
+        elif k == "drag":
+            # drag(frm: dict, to: dict, button) - NOT four positional coordinates.
             self._run(
-                self.d.mouse.scroll(
-                    action.x,
-                    action.y,
-                    direction=action.scroll_direction or "down",
-                    amount=action.scroll_amount or 3,
+                self.d.mouse.drag(
+                    {"x": action.x, "y": action.y},
+                    {"x": action.to_x, "y": action.to_y},
                 )
             )
-        elif k == "drag":
-            self._run(self.d.mouse.drag(action.x, action.y, action.to_x, action.to_y))
         else:
             raise ValueError(f"unknown action kind {k!r}")
 

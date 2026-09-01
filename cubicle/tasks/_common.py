@@ -45,3 +45,16 @@ def check_date(txn, iso_day: str):
     if not str(txn["post_date"]).startswith(iso_day):
         return Verdict(False, f"post_date is {txn['post_date']!r}, expected {iso_day}")
     return None
+
+
+def play(cd, steps) -> None:
+    """Replay a recorded oracle sequence.
+
+    `steps` is [(Action, pause_seconds)]. Every coordinate in every oracle came off a
+    screenshot someone looked at, at 1280x720. None of them are guesses.
+    """
+    import time
+
+    for action, pause in steps:
+        cd.apply(action)
+        time.sleep(pause)

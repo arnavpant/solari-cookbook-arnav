@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from cubicle.fixtures.build_seed import seed_bytes
 from cubicle.grading import accounts_by_name, open_book, parent_name
+from cubicle.tasks._common import play
 from cubicle.types import Task, Verdict
 
 PROMPT = (
@@ -57,7 +58,18 @@ def grade(book_path: str) -> Verdict:
 
 
 def oracle(cd) -> None:
-    raise NotImplementedError("record the coordinates from a live desktop first")
+    """Recorded 2026-09-01 at 1280x720. Expand Expenses, select Misc, Edit, retype."""
+    from cubicle.types import Action
+
+    play(cd, [
+        (Action(kind="click", x=13, y=241), 1.5),    # expand the Expenses tree
+        (Action(kind="click", x=75, y=264), 1.0),    # select 'Misc'
+        (Action(kind="click", x=295, y=115), 2.5),   # Edit in the toolbar
+        (Action(kind="click", x=463, y=154), 0.8),   # the Account name field
+        (Action(kind="key", text="ctrl+a"), 0.5),
+        (Action(kind="type", text="Miscellaneous"), 1.0),
+        (Action(kind="click", x=559, y=692), 2.5),   # OK
+    ])
 
 
 TASK = Task(

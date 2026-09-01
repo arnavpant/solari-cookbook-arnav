@@ -71,12 +71,21 @@ def test_apply_key_uses_press_not_type(cd):
     assert ("press", "ctrl+s") in cd.d.log
 
 
-def test_apply_scroll_passes_direction_and_amount(cd):
-    cd.apply(Action(kind="scroll", x=1, y=2, scroll_direction="up", scroll_amount=5))
-    assert ("scroll", 1, 2, "up", 5) in cd.d.log
+def test_apply_scroll_uses_page_keys_because_the_sdk_has_no_direction(cd):
+    """mouse.scroll() takes only (x, y, button, humanize) and MouseButton has no wheel
+    code, so scroll direction is unrepresentable. We move + Page_Up/Page_Down."""
+    cd.apply(Action(kind="scroll", x=1, y=2, scroll_direction="up", scroll_amount=3))
+    assert ("move", 1, 2) in cd.d.log
+    assert cd.d.log.count(("press", "Page_Up")) == 3
 
 
-def test_apply_drag_passes_destination(cd):
+def test_apply_scroll_down_uses_page_down(cd):
+    cd.apply(Action(kind="scroll", x=1, y=2, scroll_direction="down", scroll_amount=1))
+    assert ("press", "Page_Down") in cd.d.log
+
+
+def test_apply_drag_passes_dicts_not_coordinates(cd):
+    """Real signature is drag(frm: dict, to: dict, button)."""
     cd.apply(Action(kind="drag", x=1, y=2, to_x=8, to_y=9))
     assert ("drag", 1, 2, 8, 9) in cd.d.log
 
