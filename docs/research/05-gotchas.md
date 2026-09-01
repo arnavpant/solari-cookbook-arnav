@@ -252,6 +252,59 @@ integer codes before going on the wire, because "without this the wire carries a
 string and the guest's JSON decode fails with `cannot unmarshal string into ... button
 of type int`". Worth knowing if you ever hand-roll the HTTP call.
 
+### 17. Gemini's free tier is 20 requests per DAY, not per minute
+
+**Verified here.** The published guidance talks about requests per minute, so a throttle
+is the obvious response. It cannot help. The 429 body names the real constraint:
+
+```
+quotaId:    GenerateRequestsPerDayPerProjectPerModel-FreeTier
+quotaDimensions: {"model": "gemini-3-flash"}
+quotaValue: 20
+```
+
+Twenty per day, **per model**. A single 15-step cubicle task nearly exhausts it and the
+full suite needs 150+. We had paced calls 6.5s apart and still lost 11 of 15 steps to
+429s, because the limit being hit was never the one being paced against.
+
+Two practical notes: quotas are per-model, so a different model has its own fresh
+allowance; and always read the `QuotaFailure` detail in the 429 body rather than
+assuming which limit you hit.
+
+Related: several `gemini-2.5-*` models still appear in `models.list` but return
+*"no longer available to new users"* on a key issued now. Listing is not availability.
+
+### 18. Sending an API key as a URL parameter leaks it into your logs
+
+**Verified here, and it was one `git add -f` from being public.**
+
+Gemini accepts `?key=...`. httpx puts the full request URL into `HTTPStatusError`, so
+the moment a call fails, the key is inside the exception message - and from there into
+whatever you log. Ours went into the per-step trace file that this project's README
+invites people to publish as evidence.
+
+```
+HTTPStatusError: Client error '429 Too Many Requests' for url
+'https://generativelanguage.googleapis.com/v1beta/models/...?key=AQ.Ab8RN6...'
+```
+
+Send it as a header (`x-goog-api-key`), and scrub error text before it reaches disk. The
+header form is supported and has no downside.
+
+### 19. A provider outage is not an agent failure - do not score it as one
+
+**Design consequence rather than a bug**, but it is the one most likely to produce a
+wrong published number.
+
+Our harness originally treated an HTTP 429 like any other bad reply: a wasted step. Run
+a benchmark that way and a model scores worse because its vendor throttled you. With 11
+of 15 steps lost to quota, the reported score would have been a measurement of Google's
+billing tier.
+
+Provider failures now abandon the task with a distinct `provider_error` outcome that
+consumes no step budget and is excluded from the denominator - reported as "unscored",
+never as a zero.
+
 ---
 
 ## Repeated from Solari's own docs, not independently verified

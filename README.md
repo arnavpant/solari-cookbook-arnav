@@ -47,6 +47,17 @@ Every task additionally asserts **global book integrity** — for every transact
 splits must sum to zero. An agent that corrupts the book fails even when it satisfied the
 task's own condition.
 
+### A provider outage is not an agent failure
+
+This one nearly produced a wrong published number. The harness originally treated an
+HTTP 429 like any other bad reply — a wasted step. Run a benchmark that way and **a model
+scores worse because its vendor throttled you**, which makes the leaderboard a
+measurement of billing tiers rather than capability.
+
+Provider failures now abandon the task with a distinct `provider_error` outcome. It
+consumes no step budget and is excluded from the denominator: reported as *unscored*,
+never as a zero. If a run says 2/5, five tasks actually ran.
+
 ## Results
 
 The oracle is a scripted reference solution. It exists to prove every task is solvable,
@@ -57,9 +68,16 @@ it, the grader is wrong.
 | Agent | Score |
 |---|---|
 | Scripted oracle | **7 / 7** — reference, proves the suite is solvable |
-| Gemini 2.5 Flash | not yet run |
-| DeepSeek V4 Flash Vision | not yet run |
+| DeepSeek V4 Flash Vision | running |
+| Gemini | **unscored** — see below |
 | **Pinetree-CUA** | **untested** |
+
+**Why Gemini is unscored.** Its free tier allows **20 requests per day, per model**
+(`GenerateRequestsPerDayPerProjectPerModel-FreeTier = 20`), and cubicle needs ~150 to
+complete. A single 15-step task nearly exhausts the daily allowance; our first attempt
+lost 11 of 15 steps to HTTP 429. That is a quota limit, not a capability result, so it
+is reported as unscored rather than as a low score. Running Gemini here requires billing
+enabled on the Google Cloud project.
 
 No model number goes in this table until it has been measured. Whatever comes out is what
 gets published, including a zero.
@@ -141,9 +159,14 @@ the action parser are all exercised against an in-memory fake desktop.
 
 ## Gotchas
 
-Fourteen things that cost an afternoon if you meet them cold, with evidence for each and
+Nineteen things that cost an afternoon if you meet them cold, with evidence for each and
 an honest split between *we hit this* and *the docs say this*, are in
-[`docs/research/05-gotchas.md`](docs/research/05-gotchas.md). The five worst:
+[`docs/research/05-gotchas.md`](docs/research/05-gotchas.md). The worst:
+
+0. **Sending an API key as a `?key=` URL parameter leaks it into your logs.** httpx puts
+   the full URL into `HTTPStatusError`, so the first failed call writes your key into
+   whatever you log — for us, the very trace files this README invites you to publish.
+   Use a header.
 
 1. **GnuCash cannot open *any* SQLite book without `libdbd-sqlite3`.** It reports
    "No suitable backend was found", which reads exactly like a corrupt file and is not.
