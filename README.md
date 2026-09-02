@@ -65,17 +65,18 @@ which pre-empts the standard objection to any hard benchmark, and it is the vali
 harness for the graders: if the oracle does the job correctly and a grader still fails
 it, the grader is wrong.
 
-| Agent | Score |
-|---|---|
-| Scripted oracle | **7 / 7** — reference, proves the suite is solvable |
-| DeepSeek V4 Flash Vision | **0 / 7** |
-| Gemini | **unscored** — see below |
-| **Pinetree-CUA** | **untested** |
+| Agent | Score | Runs |
+|---|---|---|
+| Scripted oracle | **7 / 7** | reference — proves the suite is solvable |
+| DeepSeek V4 Flash Vision | **0 / 7** | 2 |
+| MiniMax-M3 | **0 / 7** | 2 |
+| Gemini flash-lite | **unscored** | free tier is 20 requests/day — see below |
+| **Pinetree-CUA** | **untested** | — |
 
-Seven tasks, one model, two runs. DeepSeek V4 Flash Vision and Gemini flash-lite are
-small vision models with no grounding post-training — **this is not a result about
-frontier computer-use agents**, and nothing here should be read as one. The methodology
-is the contribution; the number is an illustration of it.
+Two models scored, each twice, plus five models measured on localization. Every model
+here is a general vision model with no grounding post-training — **this is not a result
+about frontier computer-use agents**, and nothing here should be read as one. The
+methodology is the contribution; the numbers illustrate it.
 
 ### The step budget is not what fails an agent
 
@@ -104,26 +105,78 @@ artifact.
 
 ## The interesting part: they can read, they cannot point
 
-A 0/7 is not a finding until you know *why*. So we asked the models to describe a real
-cubicle screenshot and say where things are. Ground truth is exact — the GnuCash account
-rows sit at y=217, 241 and 264, and a row is 24px tall.
+A 0/7 is not a finding until you know *why*. So each model was shown a real cubicle
+screenshot and asked where things are. Ground truth is exact and was read off that
+screenshot, never guessed — the GnuCash account rows sit at y=217, 241 and 264, and a
+row is 24px tall.
 
-**Every model named every account correctly.** Reading the screen is not the problem.
+**Every model that answered named every account correctly.** Reading the screen is not
+the problem.
 
-| | Assets | Expenses | Income | vertical scale | mean error |
+Pointing at it is. `cubicle/localization.py` fits `y_predicted = scale * y_true + offset`
+over the positions each model claims:
+
+| model | Assets | Expenses | Income | scale | error | R² |
+|---|---|---|---|---|---|---|
+| **truth** | 217 | 241 | 264 | 1.000 | — | — |
+| gemma-4-26b-a4b | 303 | 336 | 369 | 1.404 | **4.0 rows** | 1.000 |
+| gemma-4-31b | 304 | 335 | 366 | 1.319 | **3.9 rows** | 1.000 |
+| Gemini flash-lite | 304 | 334 | 365 | 1.298 | **3.9 rows** | 1.000 |
+| nemotron-3-nano-omni | 300 | 330 | 360 | 1.276 | **3.7 rows** | 1.000 |
+| DeepSeek V4 Flash Vision | 230 | 256 | 282 | 1.106 | 0.6 rows | 1.000 |
+| MiniMax-M3 | 222 | 245 | 269 | ~1.0 | 0.2 rows | 0.999 |
+
+Four models from four different labs place a row that is at **y=217** at **y≈300**. R² is
+1.000 in every case: the error is not noise and not a constant offset but a **vertical
+scale factor**, so it grows the further down the screen you look.
+
+**It is not universal, and that matters more than the failures.** MiniMax-M3 has no
+systematic stretch. A benchmark on which every model scores identically measures
+nothing; this one separates them.
+
+### One run is not a measurement
+
+MiniMax-M3, ten runs, `temperature=0`:
+
+```
+scale  0.766  0.872  0.872  0.893  0.893  0.936  1.000  1.043  1.106  1.149
+error  0.08 to 2.08 row heights
+```
+
+A single run would have supported either "points perfectly" or "two rows out". Both
+would have been wrong. `--repeat N` reports the spread beside the mean for exactly this
+reason. Meanwhile nemotron returned **byte-identical** coordinates on every run — so
+"not deterministic at temperature 0" is itself a per-model property worth reporting.
+
+## Knowing where a row is, and aiming at it, are separate failures
+
+MiniMax-M3 describes the tree accurately and then, driving the same screen through the
+benchmark, clicks at a mean **y=298**. Those two numbers came from two different prompts,
+so the comparison was confounded — a better description prompt could explain all of it.
+
+`scripts/describe_vs_act.py` is the control. Same model, same screenshot, same session,
+alternating calls. The only thing that varies is what the model is asked to produce: a
+number, or a `{"kind":"click",...}` action under the committed benchmark system prompt.
+One target row, true y = **241**:
+
+| condition | n | mean y | sd | range | error |
 |---|---|---|---|---|---|
-| **truth** | 217 | 241 | 264 | 1.000 | — |
-| DeepSeek V4 Flash Vision | 230 | 256 | 282 | 1.106 | 15px — **0.6 rows** |
-| Gemini flash-lite | 304 | 334 | 365 | 1.298 | 94px — **3.9 rows** |
+| **DESCRIBE** — asked for a coordinate | 13 | 267.0 | 10.7 | 239–280 | 1.0 rows |
+| **ACT** — asked for a click | 11 | 299.1 | 11.2 | 291–332 | **2.4 rows** |
 
-The error is not noise and not a constant offset. It is a **vertical scale factor**, so
-it grows the further down the screen you look. Both models stretch the y axis.
+**The distributions do not overlap.** The highest describe answer is 280; the lowest act
+answer is 291. Welch t = 7.2, gap +32px (+1.3 rows).
 
-This explains the whole run. Gemini flash-lite believed Income was at y=365 and Expenses
-at y=334 — and the agent clicked **y=335**. It was not clicking at random. It was clicking
-an account row, in its own broken coordinate space.
+Asked where the row is, the model is about one row out. Asked to click it — same pixels,
+seconds apart — the same model is 2.4 rows out, and consistently lower. The information
+is present and does not survive the transition into an action.
 
-`scripts/analyze_trace.py` shows the consequence:
+A benchmark that only scored the task would have recorded 0/7 and attributed all of it
+to vision.
+
+### The second deficit: no feedback loop
+
+`scripts/analyze_trace.py` on the DeepSeek run:
 
 ```
 t01: 15 steps, 14 actions, 1 unparseable, 0 provider errors, screen moved 2x
@@ -131,40 +184,55 @@ t01: 15 steps, 14 actions, 1 unparseable, 0 provider errors, screen moved 2x
      STUCK: 12/14 clicks in the y=330-339 band; the screen moved only 2 time(s)
 ```
 
-That pattern is the run, not one bad task. **Five of the seven tasks** end with the agent
-locked into a ten-pixel horizontal band — y=330-339 on t01 and t03, y=300-309 on t05 and
-t06, y=420-429 on t07 — clicking repeatedly at a screen that mostly does not change.
+That pattern is the run, not one bad task. **Five of seven tasks** end with the agent
+locked into a ten-pixel band, clicking at a screen that mostly does not change. Given 63
+steps on t04 instead of 30, it spent them the same way — this is the deficit a bigger
+budget makes *worse*, not better.
 
-Two deficits, and only the first is the one people usually talk about:
+MiniMax fails differently: it stops early and declares success, calling `done` on all
+seven tasks after as few as one step. Neither model ever concluded that what it was
+doing was not working.
 
-1. **Localization.** Reading a GUI is solved. Pointing at it, to the ~10px precision a
-   24px row demands, is not.
-2. **No feedback loop.** Twenty-four clicks inside one 10px band on `t05`, with the
-   screen changing twice in thirty steps, and the model never concluded that what it was
-   doing wasn't working. This is the deficit a bigger step budget makes *worse*, not
-   better: given 63 steps on t04 it spent them the same way it spent 30.
+### Two things that did not survive scrutiny
 
-### One thing that did not reproduce
+**Out-of-bounds clicks did not reproduce.** An earlier run showed 17 of 25 clicks on
+`t05` landing outside the 720px screen, the furthest at y=801. The next run produced **0
+out of 198 pointer actions**. One occurrence across two runs is an anecdote, not a
+property, and it is no longer listed as a deficit. The harness still applies
+out-of-bounds actions rather than correcting them, and still records them as
+`off_screen`; it measures the agent, it does not help it.
 
-An earlier run showed what looked like a third deficit: on `t05`, **17 of 25 clicks
-landed outside the 720px-tall screen**, the furthest at y=801 — not a mis-aimed click but
-a coordinate that cannot exist. It is not in the current run. The same model on the same
-tasks produced **0 out-of-bounds clicks in 198 pointer actions**.
+**MiniMax's first 0/7 was not trustworthy.** 25 of its 50 steps were discarded as
+malformed JSON — all complete objects, not truncation, and 20 of 25 corrupted the `y`
+coordinate specifically (`{"kind":"double_click","x":164,267}` — the key simply
+dropped). The design doc had always specified retry-once on a malformed reply; the
+harness never did. Fixed, and re-run: **still 0/7**, with the mean click y unchanged at
+298. The result survives the confound, which is the only reason it is quoted here.
 
-One occurrence across two runs is an anecdote, not a property of the model, and it is
-written up here as such rather than quietly dropped. The harness
-still applies out-of-bounds actions rather than correcting them, and still records them
-as `off_screen`. It measures the agent; it does not help it.
+Reproduce any of this with:
 
-Reproduce with `python scripts/vision_probe.py <screenshot.png>`. Caveat: three rows on
-one screenshot per model. It is a sharp signal, not a measured constant.
+```bash
+python scripts/localization_probe.py --repeat 4      # the table above
+python scripts/describe_vs_act.py --repeat 8         # the control
+```
 
-**Why Gemini is unscored.** Its free tier allows **20 requests per day, per model**
-(`GenerateRequestsPerDayPerProjectPerModel-FreeTier = 20`), and cubicle needs ~150 to
-complete. A single task is 15 to 63 steps, so one task can exhaust the day's allowance
-outright; our first attempt lost 11 of 15 steps to HTTP 429. That is a quota limit, not a capability result, so it
-is reported as unscored rather than as a low score. Running Gemini here requires billing
-enabled on the Google Cloud project.
+Caveats that belong next to the numbers: three rows on one screenshot per model; the
+control is one model and one target row; and describe-mode is itself prompt-sensitive
+(asking for one row gives 267, asking for a list gives 245).
+
+### Why Gemini is unscored, and what free tiers cost you
+
+Gemini's free tier allows **20 requests per day, per model**
+(`GenerateRequestsPerDayPerProjectPerModel-FreeTier = 20`), and a full run needs ~150.
+A single task is 15 to 63 steps, so one task can exhaust the day outright; the first
+attempt lost 11 of 15 steps to HTTP 429. That is a quota limit, not a capability
+result, so it is reported as unscored rather than as a low score.
+
+This is why a provider error is a distinct outcome rather than a failed step. Running
+the suite on free tiers, a run of 54 steps exhausted OpenRouter's
+`free-models-per-day` allowance outright and four of five models then returned 429 for
+the rest of the day. Scored naively, that afternoon would have published five zeros
+that measured nothing but a billing tier.
 
 No model number goes in this table until it has been measured. Whatever comes out is what
 gets published, including a zero.
