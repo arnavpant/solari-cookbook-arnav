@@ -8,7 +8,7 @@ environment variables and no code.
 
 ```bash
 CUBICLE_VISION_BASE_URL=https://openrouter.ai/api/v1
-CUBICLE_VISION_MODEL=qwen/qwen2.5-vl-72b-instruct:free
+CUBICLE_VISION_MODEL=google/gemma-4-31b-it:free
 CUBICLE_VISION_API_KEY=sk-or-...
 
 python scripts/check_vision.py          # one cheap call: does it work at all?
@@ -53,6 +53,41 @@ an API call, and it is the most direct answer to the obvious objection: *you onl
 models that were never taught to point.*
 
 ---
+
+## Verified free vision models on OpenRouter
+
+Checked against `https://openrouter.ai/api/v1/models` on 2026-09-02 — that endpoint needs
+no key, so you can re-check it yourself:
+
+```bash
+python - <<'EOF'
+import httpx
+for m in httpx.get("https://openrouter.ai/api/v1/models").json()["data"]:
+    a = m.get("architecture") or {}
+    p = m.get("pricing") or {}
+    if ("image" in (a.get("input_modalities") or [])
+            and "text" in (a.get("output_modalities") or [])
+            and float(p.get("prompt", 1) or 0) == 0):
+        print(m["id"])
+EOF
+```
+
+At the time of writing, these are free **and** take image input **and** return text:
+
+| model id | context |
+|---|---|
+| `google/gemma-4-31b-it:free` | 262K |
+| `google/gemma-4-26b-a4b-it:free` | 262K |
+| `minimax/minimax-m3:free` | 1M |
+| `thinkingmachines/inkling:free` | 1M |
+| `thinkingmachines/inkling-small:free` | 1M |
+| `dots-studio/dots-3-note-preview:free` | 1M |
+| `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` | 256K |
+
+**Do not trust OpenRouter's "Image" tab in the web UI for this.** It filters on image as
+an input *modality*, which includes image and video *generators* — models that cannot
+answer a question about a screenshot at all. The query above filters on image-in and
+text-out, which is what this benchmark needs.
 
 ## Free tiers, signup only, no card
 
