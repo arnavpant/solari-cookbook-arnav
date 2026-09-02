@@ -267,10 +267,12 @@ down the page, which is what a scale factor looks like and what an offset does n
 <tbody>{rows}</tbody></table>
 <p class="note">A row is {loc["row_height"]:.0f}px tall. An R&#178; of 1.000 means the
 error is perfectly linear - not noise, and not a constant offset.</p>
-<p class="note"><strong>Count families, not model ids.</strong> Several Gemini entries
-return coordinates identical to the pixel, so they are very likely aliases onto one
-checkpoint and are not independent evidence. Read this as four labs - Google Gemini,
-Google Gemma, NVIDIA and MiniMax - rather than ten models.</p>
+<p class="note"><strong>Not aliases.</strong> Several Gemini entries return row
+coordinates identical to the pixel, which would be what one checkpoint under several
+names looks like. Asked a <em>different</em> question about the same screenshot they
+diverge in both value and format, so the agreement on the rows is convergence between
+distinct models rather than the same model counted twice. Evidence in
+<code>results/localization/alias-check.json</code>.</p>
 """
 
     ctl_html = ""

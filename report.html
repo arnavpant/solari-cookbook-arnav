@@ -89,10 +89,12 @@ down the page, which is what a scale factor looks like and what an offset does n
 <tbody><tr><td>google/gemma-4-31b-it:free</td><td class="num">1.319</td><td class="num">3.9</td><td class="num">1.000</td></tr><tr><td>google/gemma-4-26b-a4b-it:free</td><td class="num">1.404</td><td class="num">4.0</td><td class="num">1.000</td></tr><tr><td>gemini-3.1-flash-lite</td><td class="num">1.276</td><td class="num">3.8</td><td class="num">1.000</td></tr><tr><td>gemini-3.7-flash</td><td class="num">1.361</td><td class="num">3.9</td><td class="num">1.000</td></tr><tr><td>gemini-3.6-flash</td><td class="num">1.361</td><td class="num">3.9</td><td class="num">1.000</td></tr><tr><td>gemini-3.5-flash</td><td class="num">1.361</td><td class="num">3.9</td><td class="num">1.000</td></tr><tr><td>gemini-flash-latest</td><td class="num">1.340</td><td class="num">3.9</td><td class="num">1.000</td></tr><tr><td>gemini-3.5-flash-lite</td><td class="num">1.383</td><td class="num">3.9</td><td class="num">1.000</td></tr><tr><td>nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free</td><td class="num">1.276</td><td class="num">3.7</td><td class="num">1.000</td></tr><tr><td>minimax/minimax-m3:free</td><td class="num">1.000</td><td class="num">0.2</td><td class="num">0.999</td></tr></tbody></table>
 <p class="note">A row is 24px tall. An R&#178; of 1.000 means the
 error is perfectly linear - not noise, and not a constant offset.</p>
-<p class="note"><strong>Count families, not model ids.</strong> Several Gemini entries
-return coordinates identical to the pixel, so they are very likely aliases onto one
-checkpoint and are not independent evidence. Read this as four labs - Google Gemini,
-Google Gemma, NVIDIA and MiniMax - rather than ten models.</p>
+<p class="note"><strong>Not aliases.</strong> Several Gemini entries return row
+coordinates identical to the pixel, which would be what one checkpoint under several
+names looks like. Asked a <em>different</em> question about the same screenshot they
+diverge in both value and format, so the agreement on the rows is convergence between
+distinct models rather than the same model counted twice. Evidence in
+<code>results/localization/alias-check.json</code>.</p>
 
 
 <h2>Knowing where a row is, and aiming at it, are separate failures</h2>

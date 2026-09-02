@@ -136,10 +136,23 @@ Nine of eleven place a row that is at **y=217** at **y≈300**. R² is 1.000 in 
 the error is not noise and not a constant offset but a **vertical scale factor**, so it
 grows the further down the screen you look.
 
-**Count families, not model ids.** Several Gemini entries return coordinates identical
-to the pixel, so they are very likely aliases onto one checkpoint and are not
-independent evidence. Read this as **four labs** — Google Gemini, Google Gemma, NVIDIA
-and MiniMax, plus DeepSeek — rather than eleven models.
+**Are the Gemini entries just one model under several names?** They return row
+coordinates identical to the pixel, which would be exactly what aliases onto a single
+checkpoint look like — and that would make them one data point, not five. So it was
+tested rather than assumed: the same models were asked a *different* question about the
+same screenshot.
+
+```
+gemini-3.6-flash        304, 158 / 268
+gemini-3.5-flash        304, 160 / 268
+gemini-3.5-flash-lite   x=303, y=151 / 268
+gemini-3.1-flash-lite   "New button centre: 304, 158"
+```
+
+They diverge in value and in format, so they are not one endpoint returning the same
+text. Their agreement on the account rows is **convergence between distinct models**,
+which is a stronger result than duplication would have been. Evidence:
+[`results/localization/alias-check.json`](results/localization/alias-check.json).
 
 **It is not universal, and that matters more than the failures.** MiniMax-M3 has no
 systematic stretch. A benchmark on which every model scores identically measures

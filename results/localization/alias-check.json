@@ -1,0 +1,15 @@
+{
+ "question": "Look at this GnuCash screenshot. Give the x,y pixel coordinates of the centre of the 'New' button in the toolbar, and the y of the 'Description' column header. Answer as two lines only.",
+ "why": "Several Gemini ids returned identical row coordinates, raising the worry that they are aliases onto one checkpoint and therefore not independent evidence. A second, different question separates the two explanations: aliases would agree again, distinct models need not.",
+ "screenshot": "setup-verify.png",
+ "answers": {
+  "gemini-3.6-flash": "304, 158\n268",
+  "gemini-3.5-flash": "304, 160\n268",
+  "gemini-3.5-flash-lite": "x=303, y=151\ny=268",
+  "gemini-3.1-flash-lite": "New button centre: 304, 158\nDescription header y: 268",
+  "gemini-flash-latest": "304,",
+  "gemini-3.7-flash": "HTTP 503 - no answer"
+ },
+ "conclusion": "They diverge in value and in format, so they are not one endpoint returning the same text. Their agreement on the account-row coordinates is convergence between distinct models, not duplication.",
+ "recorded": "2026-09-02"
+}
