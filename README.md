@@ -186,6 +186,22 @@ class Agent(Protocol):
 `task_prompt`. `Action` is one of `click`, `double_click`, `type`, `key`, `scroll`,
 `drag`, `done`.
 
+**Or write no code at all.** Most models worth testing — OpenRouter, Groq, GitHub
+Models, NVIDIA NIM, Mistral, Together — and Ollama on your own machine all speak the
+same OpenAI-compatible API, so three environment variables are enough:
+
+```bash
+CUBICLE_VISION_BASE_URL=https://openrouter.ai/api/v1
+CUBICLE_VISION_MODEL=qwen/qwen2.5-vl-72b-instruct:free
+CUBICLE_VISION_API_KEY=sk-or-...
+
+python scripts/check_vision.py                    # one call: does it work?
+python scripts/run.py --agent vision --tasks all
+```
+
+A local Ollama endpoint needs no key at all. [`docs/free-models.md`](docs/free-models.md)
+lists the free options and how to get one.
+
 Every model receives a **byte-identical, committed system prompt**
 (`cubicle/agents/system_prompt.txt`). Per-model prompt tuning would measure prompt
 engineering rather than agent capability, and you should be able to see exactly what your
@@ -251,7 +267,7 @@ python scripts/run.py --agent oracle --tasks all
 python -m cubicle.report                 # -> report.html
 ```
 
-`pytest` runs 168 tests with no network and no credit: seeds, graders, the harness and
+`pytest` runs 185 tests with no network and no credit: seeds, graders, the harness and
 the action parser are all exercised against an in-memory fake desktop.
 
 **You do not have to take the numbers on trust.** Every run's scores and traces are

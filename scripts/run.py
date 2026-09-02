@@ -46,13 +46,21 @@ def build_agent(name: str, cd, task):
         from cubicle.agents.deepseek import DeepSeekAgent
 
         return DeepSeekAgent(os.environ["DEEPSEEK_API_KEY"])
+    if name == "vision":
+        # Any OpenAI-compatible endpoint, named by CUBICLE_VISION_* - a hosted provider
+        # or Ollama on localhost. This is how someone else puts their model on the
+        # leaderboard without writing code. See docs/free-models.md.
+        from cubicle.agents.openai_compat import from_env
+
+        return from_env()
     raise SystemExit(f"unknown agent: {name}")
 
 
 def main() -> int:
     load_dotenv()
     ap = argparse.ArgumentParser()
-    ap.add_argument("--agent", required=True, choices=["oracle", "gemini", "deepseek"])
+    ap.add_argument("--agent", required=True,
+                    choices=["oracle", "gemini", "deepseek", "vision"])
     ap.add_argument("--tasks", default="all",
                     help="comma-separated task ids, or 'all' (the scored suite)")
     ap.add_argument("--run-id", default=None)
@@ -67,6 +75,14 @@ def main() -> int:
     for tid in ids:
         if tid not in TASKS:
             raise SystemExit(f"unknown task {tid!r}; known: {', '.join(TASKS)}")
+
+    if args.agent == "vision":
+        # Fail on a missing CUBICLE_VISION_* variable before creating a desktop, not
+        # two minutes later with a Solari session already running and billing.
+        from cubicle.agents.openai_compat import from_env
+
+        probe = from_env()
+        print(f"[vision] {probe.name} via {probe.base_url}", flush=True)
 
     if args.agent == "oracle":
         pending = [t for t in ids if t in ORACLE_PENDING]
