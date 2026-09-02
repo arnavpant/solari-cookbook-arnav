@@ -1,0 +1,28 @@
+{
+ "model": "minimax/minimax-m3:free",
+ "screenshot": "setup-verify.png",
+ "target": "Expenses",
+ "true_y": 241,
+ "row_height": 24,
+ "describe": [
+  271.0,
+  271.0,
+  280.0,
+  271.0,
+  257.0,
+  261.0
+ ],
+ "act": [
+  297.0,
+  299.0,
+  298.0
+ ],
+ "errors": [
+  "act: unparseable: invalid JSON: Expecting property name enclosed in double quotes: line ",
+  "act: unparseable: invalid JSON: Expecting property name enclosed in double quotes: line ",
+  "act: unparseable: no JSON object in response: '{\"kind\":\"click\",\"x\":95,\"y\":300]'"
+ ],
+ "describe_mean": 268.5,
+ "act_mean": 298.0,
+ "gap_px": 29.5
+}

@@ -1,0 +1,198 @@
+{
+ "screenshot": "setup-verify.png",
+ "truth": {
+  "Assets": 217,
+  "Expenses": 241,
+  "Income": 264
+ },
+ "row_height": 24,
+ "question": "This is a screenshot of the GnuCash accounting application at 1280x720.\n\nList every account name in the account tree, and for each one give the y pixel\ncoordinate of the centre of its row.\n\nAnswer with one line per account, in exactly this form:\n  <account name> y=<number>\nIf you cannot read something, say so rather than guessing.",
+ "results": [
+  {
+   "model": "google/gemma-4-31b-it:free",
+   "run": 0,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily ra"
+  },
+  {
+   "model": "google/gemma-4-31b-it:free",
+   "run": 1,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily ra"
+  },
+  {
+   "model": "google/gemma-4-31b-it:free",
+   "run": 2,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily ra"
+  },
+  {
+   "model": "google/gemma-4-31b-it:free",
+   "run": 3,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "google/gemma-4-26b-a4b-it:free",
+   "run": 0,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "google/gemma-4-26b-a4b-it:free",
+   "run": 1,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "google/gemma-4-26b-a4b-it:free",
+   "run": 2,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "google/gemma-4-26b-a4b-it:free",
+   "run": 3,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "run": 0,
+   "raw": "Assets y=251\nExpenses y=269\nIncome y=287",
+   "parsed": {
+    "assets": 251.0,
+    "expenses": 269.0,
+    "income": 287.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 0.7658418829209416,
+   "offset": 84.68738684369339,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 28.333333333333332,
+   "mean_abs_error_rows": 1.1805555555555556,
+   "residuals": {
+    "assets": 34.0,
+    "expenses": 28.0,
+    "income": 23.0
+   }
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "run": 1,
+   "raw": "Assets y=192\nExpenses y=219\nIncome y=246",
+   "parsed": {
+    "assets": 192.0,
+    "expenses": 219.0,
+    "income": 246.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.1487628243814123,
+   "offset": -57.46891973445986,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 21.666666666666668,
+   "mean_abs_error_rows": 0.9027777777777778,
+   "residuals": {
+    "assets": -25.0,
+    "expenses": -22.0,
+    "income": -18.0
+   }
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "run": 2,
+   "raw": "Assets y=234\nExpenses y=255\nIncome y=275",
+   "parsed": {
+    "assets": 234.0,
+    "expenses": 255.0,
+    "income": 275.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 0.8723596861798433,
+   "offset": 44.7187688593844,
+   "r_squared": 0.999996769526537,
+   "mean_abs_error_px": 14.0,
+   "mean_abs_error_rows": 0.5833333333333334,
+   "residuals": {
+    "assets": 17.0,
+    "expenses": 14.0,
+    "income": 11.0
+   }
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "run": 3,
+   "raw": "Assets y=248\nExpenses y=269\nIncome y=289",
+   "parsed": {
+    "assets": 248.0,
+    "expenses": 269.0,
+    "income": 289.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 0.8723596861798432,
+   "offset": 58.718768859384426,
+   "r_squared": 0.999996769526537,
+   "mean_abs_error_px": 28.0,
+   "mean_abs_error_rows": 1.1666666666666667,
+   "residuals": {
+    "assets": 31.0,
+    "expenses": 28.0,
+    "income": 25.0
+   }
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "aggregate": {
+    "runs": 4,
+    "unmeasurable": 0,
+    "mean_scale": 0.9148310199155101,
+    "scale_stdev": 0.16383882370756145,
+    "min_scale": 0.7658418829209416,
+    "max_scale": 1.1487628243814123,
+    "mean_error_rows": 0.9583333333333334,
+    "min_error_rows": 0.5833333333333334,
+    "max_error_rows": 1.1805555555555556
+   }
+  },
+  {
+   "model": "dots-studio/dots-3-note-preview:free",
+   "run": 0,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "dots-studio/dots-3-note-preview:free",
+   "run": 1,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "dots-studio/dots-3-note-preview:free",
+   "run": 2,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "dots-studio/dots-3-note-preview:free",
+   "run": 3,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "run": 0,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "run": 1,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "run": 2,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "run": 3,
+   "error": "HTTP 429: {\"error\":{\"message\":\"Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day"
+  }
+ ]
+}

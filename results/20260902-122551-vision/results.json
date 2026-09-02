@@ -1,0 +1,86 @@
+[
+  {
+    "task_id": "t01",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "no account named 'Software Subscriptions' exists",
+    "steps_used": 10,
+    "max_steps": 15,
+    "model_seconds": 55.22,
+    "desktop_seconds": 11.17,
+    "unparseable_responses": 17,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  },
+  {
+    "task_id": "t02",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "no transaction described 'Printer paper'",
+    "steps_used": 1,
+    "max_steps": 36,
+    "model_seconds": 3.78,
+    "desktop_seconds": 8.13,
+    "unparseable_responses": 0,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  },
+  {
+    "task_id": "t03",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "an account named 'Misc' still exists",
+    "steps_used": 21,
+    "max_steps": 21,
+    "model_seconds": 74.08,
+    "desktop_seconds": 15.13,
+    "unparseable_responses": 15,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  },
+  {
+    "task_id": "t04",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "no transaction described 'Utilities March'",
+    "steps_used": 3,
+    "max_steps": 63,
+    "model_seconds": 18.25,
+    "desktop_seconds": 8.91,
+    "unparseable_responses": 4,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  },
+  {
+    "task_id": "t05",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "Technology split is 25000/100, expected 52000/100",
+    "steps_used": 7,
+    "max_steps": 30,
+    "model_seconds": 73.62,
+    "desktop_seconds": 11.78,
+    "unparseable_responses": 10,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  },
+  {
+    "task_id": "t06",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "March transactions not cleared: Cloud hosting, Electric bill, Laptop stand, March paper order, Stationery, Water bill",
+    "steps_used": 2,
+    "max_steps": 30,
+    "model_seconds": 8.59,
+    "desktop_seconds": 8.97,
+    "unparseable_responses": 0,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  },
+  {
+    "task_id": "t07",
+    "agent": "minimax/minimax-m3:free",
+    "outcome": "wrong_state",
+    "reason": "parent is 'Expenses', expected 'Technology'",
+    "steps_used": 10,
+    "max_steps": 30,
+    "model_seconds": 47.59,
+    "desktop_seconds": 10.95,
+    "unparseable_responses": 12,
+    "session_id": "REDACTED-SESSION-TOKEN"
+  }
+]

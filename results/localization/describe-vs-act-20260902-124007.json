@@ -1,0 +1,32 @@
+{
+ "model": "minimax/minimax-m3:free",
+ "screenshot": "setup-verify.png",
+ "target": "Expenses",
+ "true_y": 241,
+ "row_height": 24,
+ "describe": [
+  267.0,
+  280.0,
+  264.0,
+  274.0,
+  267.0,
+  269.0,
+  239.0
+ ],
+ "act": [
+  297.0,
+  332.0,
+  296.0,
+  293.0,
+  294.0,
+  291.0,
+  296.0,
+  297.0
+ ],
+ "errors": [
+  "describe: HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"minimax/minimax-m3:free is tempora"
+ ],
+ "describe_mean": 265.7142857142857,
+ "act_mean": 299.5,
+ "gap_px": 33.78571428571428
+}

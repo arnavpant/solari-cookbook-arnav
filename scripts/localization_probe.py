@@ -195,8 +195,16 @@ def main(argv: list[str]) -> int:
     )
     print(f"\nraw replies -> {path}")
 
-    scored = [r for r in records if r.get("n", 0) >= 3]
-    print(f"{len(scored)}/{len(models)} models produced a measurable answer")
+    # Count MODELS, not runs. With --repeat this previously counted four runs of one
+    # model and printed "4/5 models", which overstates the coverage of every table
+    # built from this output.
+    answered = {r["model"] for r in records if r.get("n", 0) >= 3}
+    runs_ok = sum(1 for r in records if r.get("n", 0) >= 3)
+    print(f"{len(answered)}/{len(models)} models produced a measurable answer "
+          f"({runs_ok} usable runs of {args.repeat * len(models)} attempted)")
+    if len(answered) < len(models):
+        missing = [m for m in models if m not in answered]
+        print("no answer from: " + ", ".join(missing))
     return 0
 
 

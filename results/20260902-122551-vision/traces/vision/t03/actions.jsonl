@@ -1,0 +1,21 @@
+{"step": 0, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":75,\"304}'", "attempts": 2}
+{"step": 1, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":36\",\"y\":295}'", "attempts": 2}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 47, "y": 324}}
+{"step": 3, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ':' delimiter: line 1 column 29 (char 28): '{\"kind\":\"click\",\"x\":50,\"300\"}'", "attempts": 2}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "click", "x": 9, "y": 300}}
+{"step": 5, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":76,\"305}'", "attempts": 2}
+{"step": 6, "screen_changed_since_last": false, "action": {"kind": "click", "x": 19, "y": 332}}
+{"step": 7, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 38, "y": 302}}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 11, "y": 298}}
+{"step": 9, "screen_changed_since_last": false, "action": {"kind": "click", "x": 10, "y": 337}}
+{"step": 10, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 20, "y": 303}}
+{"step": 11, "screen_changed_since_last": false, "action": {"kind": "click", "x": 42, "y": 297}}
+{"step": 12, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 57, "y": 298}}
+{"step": 13, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 18, "y": 299}}
+{"step": 14, "screen_changed_since_last": false, "action": {"kind": "click", "x": 17, "y": 296}}
+{"step": 15, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 18, "y": 299}}
+{"step": 16, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":34,\"296}'", "attempts": 2}
+{"step": 17, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 14, "y": 295}}
+{"step": 18, "screen_changed_since_last": true, "action": {"kind": "click", "x": 68, "y": 295}}
+{"step": 19, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":17,\"301}'", "attempts": 2}
+{"step": 20, "screen_changed_since_last": false, "action": {"kind": "done"}}

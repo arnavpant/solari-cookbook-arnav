@@ -1,0 +1,10 @@
+{"step": 0, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":43\",\"y\":298}'", "attempts": 2}
+{"step": 1, "screen_changed_since_last": false, "error": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":86,295}'", "attempts": 2}
+{"step": 2, "screen_changed_since_last": true, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":62\",\"y\":297}'", "attempts": 2}
+{"step": 3, "screen_changed_since_last": false, "action": {"kind": "click", "x": 78, "y": 301}}
+{"step": 4, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":89\",\"y\":297}'", "attempts": 2}
+{"step": 5, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":43,\"296}'", "attempts": 2}
+{"step": 6, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":50\",\"y\":297}'", "attempts": 2}
+{"step": 7, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":51\",\"y\":334}'", "attempts": 2}
+{"step": 8, "screen_changed_since_last": false, "error": "click requires x and y: '{\"kind\":\"click\",\"x\":115,\"x\":333}'", "attempts": 2}
+{"step": 9, "screen_changed_since_last": false, "action": {"kind": "done"}}

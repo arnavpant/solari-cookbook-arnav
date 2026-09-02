@@ -124,8 +124,17 @@ async def main() -> int:
 
     if existing:
         d = await client.connect(existing)
-        # client.connect(id) re-attaches but does NOT open the control channel.
-        await d.connect()
+        try:
+            # client.connect(id) re-attaches but does NOT open the control channel.
+            await d.connect()
+        except Exception as exc:  # noqa: BLE001
+            # A destroyed desktop still has a well-formed session id, and re-attaching
+            # to one fails at the WEBSOCKET with "HTTP 404" - which reads like a broken
+            # SDK or a bad base URL, not like a stale variable. Say what it actually is.
+            raise SystemExit(
+                f"CUBICLE_SESSION_ID is set but that desktop is gone ({exc}).\n"
+                "Clear CUBICLE_SESSION_ID in .env and run this again to make a new one."
+            ) from exc
         log("reusing existing desktop")
     else:
         d = await client.create(template="default", cpu=1, mem_mb=2048,
