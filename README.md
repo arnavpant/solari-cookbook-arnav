@@ -65,6 +65,8 @@ which pre-empts the standard objection to any hard benchmark, and it is the vali
 harness for the graders: if the oracle does the job correctly and a grader still fails
 it, the grader is wrong.
 
+![cubicle leaderboard: oracle 7/7, DeepSeek 0/7, MiniMax-M3 0/7, Pinetree-CUA untested](docs/images/leaderboard.png)
+
 | Agent | Score | Runs |
 |---|---|---|
 | Scripted oracle | **7 / 7** | reference — proves the suite is solvable |

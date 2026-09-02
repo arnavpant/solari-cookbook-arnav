@@ -206,15 +206,27 @@ def render(runs: dict[str, list[dict]]) -> str:
 
     scored = []
     for agent, results in runs.items():
+        # The headline is ONE run - the most recent - not every run ever done added
+        # together. results/ keeps the whole history, including early runs that crashed
+        # before the environment was right; summing those reported "oracle 23/25" and
+        # made the reference solution look unreliable when it is 7/7. The full history
+        # stays visible in the tables below.
+        latest = max((r.get("run", "") for r in results), default="")
+        current = [r for r in results if r.get("run", "") == latest] or results
+
         # A provider outage is not an agent failure. Excluding it from the denominator
         # keeps the score honest: a model is never punished for its vendor throttling us.
-        attempted = [r for r in results if r["outcome"] != "provider_error"]
-        skipped = len(results) - len(attempted)
+        attempted = [r for r in current if r["outcome"] != "provider_error"]
+        skipped = len(current) - len(attempted)
         passed = sum(1 for r in attempted if r["outcome"] == "pass")
+
+        runs_done = len({r.get("run", "") for r in results})
         if agent == "oracle":
             note = "reference - proves solvable"
         elif skipped:
             note = f"{skipped} unscored (provider unavailable)"
+        elif runs_done > 1:
+            note = f"latest of {runs_done} runs"
         else:
             note = ""
         scored.append((agent, passed, len(attempted), note))
@@ -255,12 +267,19 @@ keyboard - the clipboard, shell and filesystem are deliberately outside the acti
 
 
 def load(paths: list[Path]) -> dict[str, list[dict]]:
+    """Group results by agent, tagging each record with the run it came from.
+
+    The run id matters: results/ accumulates every experiment ever done, and the
+    headline score must be one run rather than the sum of all of them.
+    """
     runs: dict[str, list[dict]] = {}
     for p in paths:
         results = json.loads(p.read_text(encoding="utf-8"))
         if not results:
             continue
-        runs.setdefault(results[0]["agent"], []).extend(results)
+        run_id = p.parent.name
+        tagged = [{"run": run_id, **r} for r in results]
+        runs.setdefault(results[0]["agent"], []).extend(tagged)
     return runs
 
 

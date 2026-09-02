@@ -90,3 +90,47 @@ def test_notes_fit_inside_the_viewbox():
     # ~6px per char at font-size 11 is a conservative advance width
     assert note_x + len(note) * 6 <= width, "note runs past the right edge of the viewBox"
     assert note_x > LABEL_W + TRACK_W
+
+
+def test_the_leaderboard_scores_the_latest_run_not_the_sum_of_all_history():
+    """The headline number must be one run, not thirteen added together.
+
+    results/ accumulates every experiment, including early broken ones. Summing them
+    put "oracle 23/25" on the front page - a reader sees the reference solution failing
+    two tasks and concludes the suite is not reliably solvable. It is 7/7; the 2 came
+    from debugging runs that crashed before GnuCash was even installed correctly.
+    """
+    runs = {
+        "oracle": [
+            {"run": "20260901-1000", **r} for r in _run("oracle", {"t01": "crash"})
+        ] + [
+            {"run": "20260901-2000", **r}
+            for r in _run("oracle", {"t01": "pass", "t02": "pass"})
+        ]
+    }
+    out = render(runs)
+    assert ">2/2<" in out, "should score the latest run"
+    assert ">2/3<" not in out, "must not sum across runs"
+
+
+def test_every_run_table_still_shows_the_whole_history():
+    """Only the headline collapses to one run. The audit trail stays complete."""
+    runs = {
+        "oracle": [
+            {"run": "20260901-1000", **r} for r in _run("oracle", {"t01": "crash"})
+        ] + [
+            {"run": "20260901-2000", **r} for r in _run("oracle", {"t01": "pass"})
+        ]
+    }
+    out = render(runs)
+    assert out.count("crash") >= 1, "the earlier failed run must remain visible"
+
+
+def test_load_keeps_runs_apart(tmp_path):
+    a = tmp_path / "20260901-1000-oracle"
+    b = tmp_path / "20260901-2000-oracle"
+    for d, outcome in ((a, "crash"), (b, "pass")):
+        d.mkdir()
+        (d / "results.json").write_text(json.dumps(_run("oracle", {"t01": outcome})))
+    got = load([a / "results.json", b / "results.json"])
+    assert {r["run"] for r in got["oracle"]} == {"20260901-1000-oracle", "20260901-2000-oracle"}
