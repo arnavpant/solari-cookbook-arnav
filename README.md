@@ -2,9 +2,9 @@
 
 **A computer-use benchmark for software that has no API.**
 
-GnuCash on a Solari cloud desktop. Seven bookkeeping jobs. The agent gets pixels, a mouse
-and a keyboard — nothing else. Every score is a SQL assertion against the database the
-application itself wrote.
+GnuCash on a Solari cloud desktop. Ten bookkeeping jobs, seven of them scored. The agent
+gets pixels, a mouse and a keyboard — nothing else. Every score is a SQL assertion
+against the database the application itself wrote.
 
 ---
 
@@ -210,8 +210,8 @@ Two related decisions, both about fairness rather than difficulty:
 
 ## The tasks
 
-Seven tasks in two tiers, each with its own seed book, its own grader, and a scripted
-oracle recorded from real screenshots.
+Ten tasks in three tiers, each with its own seed book and its own grader. The seven
+scored tasks also have a scripted oracle recorded from real screenshots.
 
 | | Task | What it tests |
 |---|---|---|
@@ -222,6 +222,16 @@ oracle recorded from real screenshots.
 | | `t05` correct an existing amount | editing in place, not adding a second transaction |
 | | `t06` clear only March | discrimination — the seed holds six non-March transactions as traps |
 | | `t07` re-parent an account | tree navigation in a three-row viewport |
+| **hard** | `t08` enter six transactions in order | drift — doing an easy thing six times without losing the thread |
+| *(unscored)* | `t09` reconcile against a statement | noticing an *absence* — one statement line has no matching transaction |
+| | `t10` month-end close | two chained edits, and not sweeping in the transaction next to them |
+
+**The hard tier is not scored yet, deliberately.** Its seeds, prompts and graders are
+finished and proven offline against 18 synthetic mutations, but no oracle has been
+recorded for it — and this suite does not guess coordinates. Until a machine has been
+shown completing a task, that task is not proven solvable, and an unproven task has no
+business in a published denominator. `--tasks all` runs the seven scored tasks; t08-t10
+must be named explicitly, and the oracle agent refuses them outright.
 
 The near-miss cases are the point. Each grader rejects the specific plausible wrong
 answer: entering the transaction twice, splitting one bill into two, leaving the wrong
@@ -241,7 +251,7 @@ python scripts/run.py --agent oracle --tasks all
 python -m cubicle.report                 # -> report.html
 ```
 
-`pytest` runs 148 tests with no network and no credit: seeds, graders, the harness and
+`pytest` runs 168 tests with no network and no credit: seeds, graders, the harness and
 the action parser are all exercised against an in-memory fake desktop.
 
 **You do not have to take the numbers on trust.** Every run's scores and traces are

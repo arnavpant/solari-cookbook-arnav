@@ -28,7 +28,7 @@ from solari_desktop import DesktopClient  # noqa: E402
 
 from cubicle.desktop import CubicleDesktop  # noqa: E402
 from cubicle.harness import run_task  # noqa: E402
-from cubicle.tasks import TASKS  # noqa: E402
+from cubicle.tasks import ORACLE_PENDING, SCORED, TASKS  # noqa: E402
 
 BASE_URL = "https://api.getsolari.com"
 
@@ -53,15 +53,29 @@ def main() -> int:
     load_dotenv()
     ap = argparse.ArgumentParser()
     ap.add_argument("--agent", required=True, choices=["oracle", "gemini", "deepseek"])
-    ap.add_argument("--tasks", default="all", help="comma-separated task ids, or 'all'")
+    ap.add_argument("--tasks", default="all",
+                    help="comma-separated task ids, or 'all' (the scored suite)")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--no-trace", action="store_true")
     args = ap.parse_args()
 
-    ids = list(TASKS) if args.tasks == "all" else args.tasks.split(",")
+    # "all" is the SCORED suite: the tasks with a recorded oracle, and so the only ones
+    # proven solvable. A task in ORACLE_PENDING has a finished seed, prompt and grader,
+    # but nobody has yet shown a machine can complete it - scoring a model against it
+    # would put an unproven task in the denominator. Name it explicitly to run it.
+    ids = list(SCORED) if args.tasks == "all" else args.tasks.split(",")
     for tid in ids:
         if tid not in TASKS:
             raise SystemExit(f"unknown task {tid!r}; known: {', '.join(TASKS)}")
+
+    if args.agent == "oracle":
+        pending = [t for t in ids if t in ORACLE_PENDING]
+        if pending:
+            raise SystemExit(
+                f"no recorded oracle for {', '.join(pending)}. Their graders are complete "
+                "and tested offline; what is missing is coordinates read off a live "
+                "desktop. This suite does not guess coordinates."
+            )
 
     run_id = args.run_id or f"{time.strftime('%Y%m%d-%H%M%S')}-{args.agent}"
     out = Path("results") / run_id

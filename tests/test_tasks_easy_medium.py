@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from cubicle.tasks import TASKS
+from cubicle.tasks import ORACLE_PENDING, SCORED, TASKS
 from tests.helpers import add_account, add_txn, fresh, guid_of, path_of, reconcile
 
 # --------------------------------------------------------------------- t02
@@ -270,10 +270,30 @@ def test_every_prompt_tells_the_agent_how_to_finish():
         assert "done action" in task.prompt, f"{task.task_id} never mentions the done action"
 
 
-def test_every_task_has_a_recorded_oracle():
-    """A NotImplementedError oracle means the task was never proven solvable."""
+def test_every_scored_task_has_a_recorded_oracle():
+    """A NotImplementedError oracle means the task was never proven solvable.
+
+    Scoped to SCORED rather than TASKS: a task with no recorded oracle is not proven
+    solvable, so it must not be scored. The exemption is a published list, not a
+    per-task opinion, and the test below stops it from being used as a hiding place.
+    """
     import inspect
 
-    for task in TASKS.values():
-        src = inspect.getsource(task.oracle)
-        assert "NotImplementedError" not in src, f"{task.task_id} has no recorded oracle"
+    for task_id in SCORED:
+        src = inspect.getsource(TASKS[task_id].oracle)
+        assert "NotImplementedError" not in src, f"{task_id} has no recorded oracle"
+
+
+def test_pending_tasks_really_are_missing_their_oracle():
+    """The exemption must expire on its own.
+
+    If someone records t08's oracle and forgets to take it out of ORACLE_PENDING, the
+    task stays silently unscored. This fails the moment that happens.
+    """
+    import inspect
+
+    for task_id in ORACLE_PENDING:
+        src = inspect.getsource(TASKS[task_id].oracle)
+        assert "NotImplementedError" in src, (
+            f"{task_id} now has an oracle - remove it from ORACLE_PENDING so it is scored"
+        )
