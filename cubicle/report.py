@@ -21,6 +21,13 @@ import json
 import sys
 from pathlib import Path
 
+from cubicle.charts import (
+    control_svg,
+    load_control,
+    load_localization,
+    localization_svg,
+)
+
 BAR_H = 26
 BAR_GAP = 4  # >= 2px surface gap between adjacent fills
 LABEL_W = 200
@@ -38,6 +45,7 @@ CSS = """
   --rule: #e0dfda;
   --series: #2a78d6;
   --track: #eceae5;
+  --ok: #1a7f4b;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -50,6 +58,7 @@ CSS = """
     --rule: #35342f;
     --series: #3987e5;
     --track: #2a2a28;
+    --ok: #45c08a;
   }
 }
 :root[data-theme="dark"] {
@@ -231,6 +240,51 @@ def render(runs: dict[str, list[dict]]) -> str:
             note = ""
         scored.append((agent, passed, len(attempted), note))
     scored.sort(key=lambda row: (-row[1], row[0]))
+
+    # The two sections that explain WHY the scores are what they are. Both are optional:
+    # a fresh clone with no probe output still renders a valid report.
+    loc = load_localization(Path("results/localization"))
+    ctl = load_control(Path("results/localization"))
+
+    loc_html = ""
+    if loc.get("models"):
+        rows = "".join(
+            f"<tr><td>{html.escape(m)}</td>"
+            f"<td class=\"num\">{loc['stats'][m]['scale']:.3f}</td>"
+            f"<td class=\"num\">{loc['stats'][m]['err_rows']:.1f}</td>"
+            f"<td class=\"num\">{loc['stats'][m]['r2']:.3f}</td></tr>"
+            for m, _ in loc["models"]
+            if loc["stats"].get(m, {}).get("scale") is not None
+        )
+        loc_html = f"""
+<h2>Why they fail: they read the screen, then point somewhere else</h2>
+<p class="note">Ground truth was read off a real screenshot, never guessed. Drawn to
+screen scale, so the error is visible rather than arithmetic: the marks fan out going
+down the page, which is what a scale factor looks like and what an offset does not.</p>
+<figure>{localization_svg(loc["truth"], loc["models"])}</figure>
+<table><thead><tr><th>agent</th><th class="num">vertical scale</th>
+<th class="num">error (row heights)</th><th class="num">R&#178;</th></tr></thead>
+<tbody>{rows}</tbody></table>
+<p class="note">A row is {loc["row_height"]:.0f}px tall. An R&#178; of 1.000 means the
+error is perfectly linear - not noise, and not a constant offset.</p>
+"""
+
+    ctl_html = ""
+    if ctl:
+        gap = (sum(ctl["act"]) / len(ctl["act"])) - (
+            sum(ctl["describe"]) / len(ctl["describe"])
+        )
+        ctl_html = f"""
+<h2>Knowing where a row is, and aiming at it, are separate failures</h2>
+<p class="note">Same model, same screenshot, same session, alternating calls. The only
+thing that varies is what the model is asked to produce: a coordinate, or a click.
+Without this control, "describes well, clicks badly" is confounded with "two different
+prompts".</p>
+<figure>{control_svg(ctl["describe"], ctl["act"], ctl["true_y"])}</figure>
+<p class="note">{html.escape(str(ctl["model"]))} &#183; asked to act, it lands
+{gap:+.0f}px from where it says the row is.</p>
+"""
+
     scored.append(("Pinetree-CUA", 0, 0, "untested"))
 
     return f"""<!doctype html>
@@ -248,6 +302,8 @@ GnuCash on a Solari cloud desktop, driven only through pixels, keyboard and mous
 over the book GnuCash itself wrote - no model judged anything.</p>
 <figure>{leaderboard_svg(scored)}</figure>
 
+{loc_html}
+{ctl_html}
 <h2>Per task</h2>
 <p class="note">The oracle row is the proof the suite is solvable at all.</p>
 {matrix_table(runs, task_ids)}

@@ -65,7 +65,7 @@ which pre-empts the standard objection to any hard benchmark, and it is the vali
 harness for the graders: if the oracle does the job correctly and a grader still fails
 it, the grader is wrong.
 
-![cubicle leaderboard: oracle 7/7, DeepSeek 0/7, MiniMax-M3 0/7, Pinetree-CUA untested](docs/images/leaderboard.png)
+![cubicle: the oracle passes 7/7 while every vision model scores 0/7, and a chart showing four models placing account rows far below where they actually are](docs/images/hero.png)
 
 | Agent | Score | Runs |
 |---|---|---|

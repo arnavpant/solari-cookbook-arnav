@@ -134,3 +134,117 @@ def test_load_keeps_runs_apart(tmp_path):
         (d / "results.json").write_text(json.dumps(_run("oracle", {"t01": outcome})))
     got = load([a / "results.json", b / "results.json"])
     assert {r["run"] for r in got["oracle"]} == {"20260901-1000-oracle", "20260901-2000-oracle"}
+
+
+# ------------------------------------------------- localization + control charts
+
+def test_localization_chart_places_marks_at_true_screen_scale():
+    """The whole point is that you can SEE the stretch, so the drawing must be to
+    scale: a model that says y=300 for a row at y=217 has to sit visibly lower."""
+    from cubicle.charts import localization_svg
+
+    svg = localization_svg(
+        truth={"Assets": 217, "Expenses": 241, "Income": 264},
+        models=[("truth-like", [217, 241, 264]), ("stretched", [300, 330, 360])],
+        height_px=720,
+    )
+    ys = [float(v) for v in __import__("re").findall(r'data-y="([\d.]+)"', svg)]
+    assert ys, "marks must record the screen y they represent"
+    assert max(ys) == 360 and min(ys) == 217
+
+
+def test_localization_chart_draws_the_truth_line_for_every_row():
+    from cubicle.charts import localization_svg
+
+    svg = localization_svg(
+        truth={"Assets": 217, "Expenses": 241, "Income": 264},
+        models=[("m", [300, 330, 360])],
+        height_px=720,
+    )
+    assert svg.count('class="truth"') == 3
+
+
+def test_localization_chart_escapes_model_names():
+    from cubicle.charts import localization_svg
+
+    svg = localization_svg(
+        truth={"A": 217},
+        models=[("<script>x</script>", [300])],
+        height_px=720,
+    )
+    assert "<script>x</script>" not in svg
+
+
+def test_control_chart_shows_two_distributions_and_the_truth():
+    from cubicle.charts import control_svg
+
+    svg = control_svg(describe=[267, 270, 264], act=[299, 297, 302], true_y=241)
+    assert "describe" in svg and "act" in svg
+    assert 'class="truth"' in svg
+
+
+def test_control_chart_reports_that_the_ranges_do_not_overlap():
+    """That is the claim the chart exists to support; it must be stated, not implied."""
+    from cubicle.charts import control_svg
+
+    svg = control_svg(describe=[239, 280], act=[291, 332], true_y=241)
+    assert "no overlap" in svg.lower()
+
+
+def test_control_chart_says_so_when_the_ranges_DO_overlap():
+    from cubicle.charts import control_svg
+
+    svg = control_svg(describe=[239, 300], act=[291, 332], true_y=241)
+    assert "no overlap" not in svg.lower()
+
+
+def test_load_localization_reads_the_probe_output(tmp_path):
+    from cubicle.charts import load_localization
+
+    d = tmp_path / "localization"
+    d.mkdir()
+    (d / "20260902-120000.json").write_text(json.dumps({
+        "truth": {"Assets": 217, "Expenses": 241, "Income": 264},
+        "row_height": 24,
+        "results": [
+            {"model": "m1", "parsed": {"assets": 300, "expenses": 330, "income": 360},
+             "n": 3, "scale": 1.276, "mean_abs_error_rows": 3.7, "r_squared": 1.0},
+            {"model": "m2", "error": "HTTP 429"},
+        ],
+    }))
+    got = load_localization(d)
+    assert [m for m, _ in got["models"]] == ["m1"], "a model that never answered is not plotted"
+    assert got["truth"] == {"Assets": 217, "Expenses": 241, "Income": 264}
+
+
+def test_load_localization_pools_every_probe_file(tmp_path):
+    """Free tiers throttle, so no single probe file has every model in it.
+
+    Reading only the newest file plotted one model and silently dropped four that had
+    answered perfectly well an hour earlier - which reads as "only one model was
+    measured" and understates the finding.
+    """
+    from cubicle.charts import load_localization
+
+    d = tmp_path / "localization"
+    d.mkdir()
+    truth = {"Assets": 217, "Expenses": 241, "Income": 264}
+
+    (d / "20260902-100000.json").write_text(json.dumps({
+        "truth": truth, "row_height": 24,
+        "results": [
+            {"model": "early", "parsed": {"assets": 300, "expenses": 330, "income": 360},
+             "n": 3, "scale": 1.276, "mean_abs_error_rows": 3.7, "r_squared": 1.0},
+        ],
+    }))
+    (d / "20260902-200000.json").write_text(json.dumps({
+        "truth": truth, "row_height": 24,
+        "results": [
+            {"model": "late", "parsed": {"assets": 222, "expenses": 245, "income": 269},
+             "n": 3, "scale": 1.0, "mean_abs_error_rows": 0.2, "r_squared": 0.999},
+            {"model": "early", "error": "HTTP 429"},
+        ],
+    }))
+
+    got = load_localization(d)
+    assert sorted(m for m, _ in got["models"]) == ["early", "late"]
