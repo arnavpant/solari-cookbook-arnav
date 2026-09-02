@@ -4,7 +4,7 @@ import pytest
 
 from cubicle.desktop import BOOK_COPY, CubicleDesktop
 from cubicle.fixtures.build_seed import seed_bytes
-from cubicle.harness import UnparseableResponse, run_task
+from cubicle.harness import UnparseableResponse, run_task, session_fingerprint
 from cubicle.types import Action, Task, Verdict
 from tests.fake_desktop import FakeDesktop
 
@@ -138,7 +138,10 @@ def test_unparseable_responses_are_counted_and_cost_a_step(cd):
 
 def test_result_records_session_and_timing(cd):
     r = run_task(cd, ScriptedAgent([Action(kind="done")]), make_task(PASS))
-    assert r.session_id == "fake-session"
+    # A fingerprint, not the raw token: the session id is a bearer credential and
+    # results.json is meant to be published. See test_no_secrets.py.
+    assert r.session_id == session_fingerprint("fake-session")
+    assert "fake-session" not in r.session_id
     assert r.model_seconds >= 0
     assert r.desktop_seconds >= 0
     assert r.max_steps == 5

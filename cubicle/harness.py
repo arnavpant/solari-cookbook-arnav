@@ -21,6 +21,24 @@ from cubicle.types import Observation, Task, TaskResult, Verdict
 UNPARSEABLE_ATTEMPTS = 2
 
 
+def session_fingerprint(session_id: str | None) -> str:
+    """A short, non-secret handle for the desktop a task ran on.
+
+    Solari's session id is a signed bearer token. results.json is the artifact this
+    project asks people to publish, so the raw value must never reach it - it was
+    stripped by hand twice before this function existed, and something that only has to
+    leak once should not depend on remembering.
+
+    A truncated hash still answers the question the field is for: did these tasks run on
+    the same desktop, and is this trace from the run I think it is.
+    """
+    import hashlib
+
+    if not session_id:
+        return "unknown"
+    return "sess-" + hashlib.sha256(session_id.encode()).hexdigest()[:12]
+
+
 class UnparseableResponse(Exception):
     """Raised by an agent when the model's reply is not a valid Action.
 
@@ -80,7 +98,7 @@ def run_task(
             model_seconds=round(model_s, 2),
             desktop_seconds=round(desktop_s, 2),
             unparseable_responses=unparseable,
-            session_id=getattr(cd.d, "sessionId", "unknown"),
+            session_id=session_fingerprint(getattr(cd.d, "sessionId", None)),
         )
 
     def grade_now() -> Verdict:
