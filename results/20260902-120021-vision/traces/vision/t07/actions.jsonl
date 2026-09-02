@@ -1,0 +1,10 @@
+{"step": 0, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":36,\"334}'"}
+{"step": 1, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":48,\"y]}'"}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 13, "y": 301}}
+{"step": 3, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 30 (char 29): '{\"kind\":\"double_click\",\"x\":38\",\"y\":\"298\"}'"}
+{"step": 4, "screen_changed_since_last": false, "action": {"kind": "click", "x": 272, "y": 226}}
+{"step": 5, "screen_changed_since_last": true, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":38,\"299}'"}
+{"step": 6, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 30 (char 29): '{\"kind\":\"double_click\",\"x\":60\",\"y\":297}'"}
+{"step": 7, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":57\",\"y\":299}'"}
+{"step": 8, "screen_changed_since_last": false, "action": {"kind": "click", "x": 20, "y": 294}}
+{"step": 9, "screen_changed_since_last": true, "action": {"kind": "done"}}

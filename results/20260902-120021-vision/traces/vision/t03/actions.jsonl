@@ -1,0 +1,18 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 45, "y": 331}}
+{"step": 1, "screen_changed_since_last": false, "error": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":14,299}'"}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "click", "x": 49, "y": 328}}
+{"step": 3, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ':' delimiter: line 1 column 34 (char 33): '{\"kind\":\"double_click\",\"x\":66,\"y\"]}'"}
+{"step": 4, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":20,\"312}'"}
+{"step": 5, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 7, "y": 332}}
+{"step": 6, "screen_changed_since_last": true, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":87,\"293}'"}
+{"step": 7, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":38,\"y]}'"}
+{"step": 8, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":12\",\"y\":266}'"}
+{"step": 9, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 13, "y": 299}}
+{"step": 10, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 21, "y": 299}}
+{"step": 11, "screen_changed_since_last": false, "action": {"kind": "click", "x": 68, "y": 335}}
+{"step": 12, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":87,\"288}'"}
+{"step": 13, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":9,\"335}'"}
+{"step": 14, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 14, "y": 296}}
+{"step": 15, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 10, "y": 301}}
+{"step": 16, "screen_changed_since_last": false, "action": {"kind": "click", "x": 49, "y": 305}}
+{"step": 17, "screen_changed_since_last": false, "action": {"kind": "done"}}

@@ -170,3 +170,64 @@ def fit(claimed: dict[str, float], truth: Ground) -> Fit:
         row_height=truth.row_height,
         residuals=residuals,
     )
+
+
+@dataclass(frozen=True)
+class Aggregate:
+    """Several runs of one model on one screenshot.
+
+    One run is not a measurement. Six runs of MiniMax-M3 at temperature 0 produced
+    scales from 0.893 to 1.106 and errors from 0.08 to 2.08 row heights - a single run
+    would have published either "points perfectly" or "two rows out", and both would
+    have been wrong. The spread is reported alongside the mean so a reader can see
+    which claims a single number could support.
+    """
+
+    runs: int
+    unmeasurable: int
+    mean_scale: float | None = None
+    scale_stdev: float | None = None
+    min_scale: float | None = None
+    max_scale: float | None = None
+    mean_error_rows: float = float("nan")
+    min_error_rows: float = float("nan")
+    max_error_rows: float = float("nan")
+
+    def summary(self, label: str) -> str:
+        if self.runs == 0:
+            return f"{label}: no measurable run out of {self.unmeasurable}"
+        scale = "n/a" if self.mean_scale is None else f"{self.mean_scale:.3f}"
+        spread = (
+            ""
+            if self.min_scale is None or self.runs < 2
+            else f" [{self.min_scale:.3f}-{self.max_scale:.3f}]"
+        )
+        return (
+            f"{label}: n={self.runs}  scale {scale}{spread}  "
+            f"err {self.mean_error_rows:.2f} rows "
+            f"[{self.min_error_rows:.2f}-{self.max_error_rows:.2f}]"
+        )
+
+
+def aggregate(fits: "list[Fit]") -> Aggregate:
+    """Collapse repeated runs, keeping the spread visible."""
+    import statistics
+
+    good = [f for f in fits if f.n >= 2 and f.scale is not None]
+    unmeasurable = len(fits) - len(good)
+    if not good:
+        return Aggregate(runs=0, unmeasurable=unmeasurable)
+
+    scales = [f.scale for f in good]
+    errs = [f.mean_abs_error_rows for f in good]
+    return Aggregate(
+        runs=len(good),
+        unmeasurable=unmeasurable,
+        mean_scale=statistics.fmean(scales),
+        scale_stdev=statistics.stdev(scales) if len(scales) > 1 else 0.0,
+        min_scale=min(scales),
+        max_scale=max(scales),
+        mean_error_rows=statistics.fmean(errs),
+        min_error_rows=min(errs),
+        max_error_rows=max(errs),
+    )

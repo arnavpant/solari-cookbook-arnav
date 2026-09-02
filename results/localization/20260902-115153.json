@@ -1,0 +1,68 @@
+{
+ "screenshot": "setup-verify.png",
+ "truth": {
+  "Assets": 217,
+  "Expenses": 241,
+  "Income": 264
+ },
+ "row_height": 24,
+ "question": "This is a screenshot of the GnuCash accounting application at 1280x720.\n\nList every account name in the account tree, and for each one give the y pixel\ncoordinate of the centre of its row.\n\nAnswer with one line per account, in exactly this form:\n  <account name> y=<number>\nIf you cannot read something, say so rather than guessing.",
+ "results": [
+  {
+   "model": "google/gemma-4-31b-it:free",
+   "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily ra"
+  },
+  {
+   "model": "google/gemma-4-26b-a4b-it:free",
+   "error": "HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-26b-a4b-it:free is temporaril"
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "raw": "Assets y=251\nExpenses y=272\nIncome y=292",
+   "parsed": {
+    "assets": 251.0,
+    "expenses": 272.0,
+    "income": 292.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 0.8723596861798432,
+   "offset": 61.718768859384426,
+   "r_squared": 0.999996769526537,
+   "mean_abs_error_px": 31.0,
+   "mean_abs_error_rows": 1.2916666666666667,
+   "residuals": {
+    "assets": 34.0,
+    "expenses": 31.0,
+    "income": 28.0
+   }
+  },
+  {
+   "model": "dots-studio/dots-3-note-preview:free",
+   "error": "empty (finish_reason=length)"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "raw": "Assets y=300\nExpenses y=330\nIncome y=360",
+   "parsed": {
+    "assets": 300.0,
+    "expenses": 330.0,
+    "income": 360.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.2764031382015693,
+   "offset": 22.812311406155686,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 89.33333333333333,
+   "mean_abs_error_rows": 3.722222222222222,
+   "residuals": {
+    "assets": 83.0,
+    "expenses": 89.0,
+    "income": 96.0
+   }
+  }
+ ]
+}

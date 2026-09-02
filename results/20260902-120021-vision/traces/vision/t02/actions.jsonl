@@ -1,0 +1,8 @@
+{"step": 0, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 58, "y": 229}}
+{"step": 1, "screen_changed_since_last": true, "error": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 32 (char 31): '{\"kind\":\"double_click\",\"x\":164,267}'"}
+{"step": 2, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ',' delimiter: line 1 column 23 (char 22): '{\"kind\":\"click\",\"x\":43\",\"y\":306}'"}
+{"step": 3, "screen_changed_since_last": false, "error": "invalid JSON: Unterminated string starting at: line 1 column 25 (char 24): '{\"kind\":\"click\",\"x\":137,\"306}'"}
+{"step": 4, "screen_changed_since_last": true, "error": "invalid JSON: Expecting ':' delimiter: line 1 column 36 (char 35): '{\"kind\":\"double_click\",\"x\":42,\"307\"}'"}
+{"step": 5, "screen_changed_since_last": false, "error": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":46,305}'"}
+{"step": 6, "screen_changed_since_last": false, "error": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 24 (char 23): '{\"kind\":\"click\",\"x\":47,303}'"}
+{"step": 7, "screen_changed_since_last": false, "action": {"kind": "done"}}

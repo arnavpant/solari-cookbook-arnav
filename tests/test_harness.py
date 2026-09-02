@@ -130,9 +130,10 @@ def test_corrupt_beats_wrong_state(cd):
 
 
 def test_unparseable_responses_are_counted_and_cost_a_step(cd):
+    """Every bad reply is counted; a step is spent once the retry has also failed."""
     r = run_task(cd, BabblingAgent(), make_task(PASS, max_steps=4))
-    assert r.unparseable_responses == 4
     assert r.steps_used == 4
+    assert r.unparseable_responses == 8   # 4 steps x (reply + one retry)
 
 
 def test_result_records_session_and_timing(cd):
@@ -219,3 +220,54 @@ def test_provider_outage_is_not_scored_as_an_agent_failure(cd):
 def test_provider_outage_abandons_rather_than_burning_the_budget(cd):
     r = run_task(cd, ThrottledAgent(), make_task(PASS, max_steps=30))
     assert r.steps_used == 0
+
+
+class FlakyFormatAgent:
+    """Emits garbage, then a valid action - the shape a real model actually fails in.
+
+    MiniMax-M3 produced 25 malformed objects in 50 steps, almost all of them corrupting
+    the y coordinate ('{"kind":"click","x":164,267}' - the "y" key simply dropped). One
+    retry recovers most of those; without it the benchmark measures JSON serialisation
+    rather than GUI capability.
+    """
+
+    name = "flaky"
+
+    def __init__(self, action: Action) -> None:
+        self.action = action
+        self.calls = 0
+
+    def reset(self):
+        self.calls = 0
+
+    def act(self, obs):
+        self.calls += 1
+        if self.calls % 2 == 1:
+            raise UnparseableResponse('invalid JSON: {"kind":"click","x":164,267}')
+        return self.action
+
+
+def test_an_unparseable_reply_is_retried_once_before_costing_a_step(cd):
+    """The design doc specifies retry-once. Without it a model that formats badly every
+    other reply loses half its budget to formatting, and the score is not about the
+    screen at all."""
+    agent = FlakyFormatAgent(Action(kind="done"))
+    r = run_task(cd, agent, make_task(PASS, max_steps=5))
+    assert r.outcome == "pass"
+    assert agent.calls == 2          # garbage, then the retry succeeded
+    assert r.steps_used == 1         # the pair cost ONE step, not two
+
+
+def test_the_retry_is_still_counted_so_the_flakiness_stays_visible(cd):
+    """Recovering from it must not hide it. A model that needs a retry every step is
+    worse than one that does not, and the number has to say so."""
+    agent = FlakyFormatAgent(Action(kind="done"))
+    r = run_task(cd, agent, make_task(PASS, max_steps=5))
+    assert r.unparseable_responses == 1
+
+
+def test_two_bad_replies_in_a_row_still_cost_a_step(cd):
+    """Retry once, not forever. An agent that cannot emit a valid action IS failing."""
+    r = run_task(cd, BabblingAgent(), make_task(PASS, max_steps=4))
+    assert r.steps_used == 4
+    assert r.unparseable_responses == 8   # two attempts per step

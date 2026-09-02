@@ -16,6 +16,11 @@ from cubicle.grading import check_integrity, open_book, write_temp_book
 from cubicle.types import Observation, Task, TaskResult, Verdict
 
 
+# The design doc's contract: a reply that fails to parse is retried once, then the
+# step is spent.
+UNPARSEABLE_ATTEMPTS = 2
+
+
 class UnparseableResponse(Exception):
     """Raised by an agent when the model's reply is not a valid Action.
 
@@ -119,25 +124,41 @@ def run_task(
             )
 
             t0 = time.monotonic()
-            try:
-                action = agent.act(obs)
-            except ProviderUnavailable as exc:
-                # Not the agent's fault. Abandon the task rather than burning the step
-                # budget on retries and reporting the result as if the model failed.
-                model_s += time.monotonic() - t0
-                if trace_log:
-                    trace_log[-1]["provider_error"] = str(exc)[:300]
-                    flush_trace()
-                return result("provider_error", str(exc)[:400])
-            except UnparseableResponse as exc:
-                unparseable += 1
+            action = None
+            errors: list[str] = []
+            # One retry on a malformed reply, then the step is spent. Models fail to
+            # serialise an action far more often than you would expect - MiniMax-M3
+            # produced 25 malformed objects in 50 steps, nearly all of them dropping or
+            # corrupting the "y" key. Without the retry that run measured JSON
+            # formatting rather than anything about the screen. Retrying forever would
+            # be the opposite error: an agent that cannot emit a valid action IS
+            # failing, and hiding that would flatter the model.
+            for _attempt in range(UNPARSEABLE_ATTEMPTS):
+                try:
+                    action = agent.act(obs)
+                    break
+                except ProviderUnavailable as exc:
+                    # Not the agent's fault. Abandon the task rather than burning the
+                    # step budget and reporting the result as if the model failed.
+                    model_s += time.monotonic() - t0
+                    if trace_log:
+                        trace_log[-1]["provider_error"] = str(exc)[:300]
+                        flush_trace()
+                    return result("provider_error", str(exc)[:400])
+                except UnparseableResponse as exc:
+                    # Counted per reply, not per step, so a model that needs a retry
+                    # every single time still looks worse than one that never does.
+                    unparseable += 1
+                    errors.append(str(exc)[:300])
+            model_s += time.monotonic() - t0
+
+            if action is None:
                 steps += 1
-                model_s += time.monotonic() - t0
                 if trace_log:
-                    trace_log[-1]["error"] = str(exc)[:300]
+                    trace_log[-1]["error"] = errors[-1]
+                    trace_log[-1]["attempts"] = len(errors)
                     flush_trace()
                 continue
-            model_s += time.monotonic() - t0
 
             steps += 1
             if trace_log:

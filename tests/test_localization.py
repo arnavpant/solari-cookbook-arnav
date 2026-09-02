@@ -160,3 +160,50 @@ def test_strips_a_trailing_verb_from_the_name():
 
 def test_names_in_quotes_or_backticks_are_matched_bare():
     assert parse_positions('"Assets" y=217') == {"assets": 217.0}
+
+
+# ------------------------------------------------------------------ aggregate
+
+def test_aggregate_reports_the_spread_not_just_the_mean():
+    """One run is not a measurement.
+
+    Six runs of the same model at temperature 0 gave scales from 0.893 to 1.106. A
+    single run would have published either 'this model points perfectly' or 'this model
+    is two rows out', and both would have been wrong.
+    """
+    from cubicle.localization import aggregate
+
+    fits = [fit({"assets": 217 + d, "expenses": 241 + d, "income": 264 + d}, TRUTH)
+            for d in (0, 12, 24)]
+    agg = aggregate(fits)
+    assert agg.runs == 3
+    assert agg.mean_error_rows == pytest.approx(0.5)
+    assert agg.min_error_rows == pytest.approx(0.0)
+    assert agg.max_error_rows == pytest.approx(1.0)
+
+
+def test_aggregate_ignores_runs_that_produced_no_answer():
+    from cubicle.localization import aggregate
+
+    fits = [fit({"assets": 217, "expenses": 241, "income": 264}, TRUTH), fit({}, TRUTH)]
+    agg = aggregate(fits)
+    assert agg.runs == 1
+    assert agg.unmeasurable == 1
+
+
+def test_aggregate_of_nothing_is_not_an_error():
+    from cubicle.localization import aggregate
+
+    agg = aggregate([fit({}, TRUTH)])
+    assert agg.runs == 0 and agg.mean_scale is None
+
+
+def test_a_reproducible_model_reports_zero_spread():
+    """nemotron returned byte-identical coordinates on every run. That is a real
+    property and has to be visible, not averaged away."""
+    from cubicle.localization import aggregate
+
+    same = fit({"assets": 300, "expenses": 330, "income": 360}, TRUTH)
+    agg = aggregate([same, same, same])
+    assert agg.scale_stdev == pytest.approx(0.0)
+    assert agg.min_error_rows == agg.max_error_rows

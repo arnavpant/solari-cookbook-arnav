@@ -1,0 +1,4 @@
+{"step": 0, "screen_changed_since_last": false, "error": "invalid JSON: Expecting property name enclosed in double quotes: line 1 column 31 (char 30): '{\"kind\":\"double_click\",\"x\":67,269}'"}
+{"step": 1, "screen_changed_since_last": false, "error": "invalid JSON: Expecting ':' delimiter: line 1 column 31 (char 30): '{\"kind\":\"click\",\"x\":56,\":331,\"y\":331}'"}
+{"step": 2, "screen_changed_since_last": false, "action": {"kind": "double_click", "x": 45, "y": 267}}
+{"step": 3, "screen_changed_since_last": true, "action": {"kind": "done"}}

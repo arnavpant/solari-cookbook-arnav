@@ -1,0 +1,104 @@
+{
+ "screenshot": "setup-verify.png",
+ "truth": {
+  "Assets": 217,
+  "Expenses": 241,
+  "Income": 264
+ },
+ "row_height": 24,
+ "question": "This is a screenshot of the GnuCash accounting application at 1280x720.\n\nList every account name in the account tree, and for each one give the y pixel\ncoordinate of the centre of its row.\n\nAnswer with one line per account, in exactly this form:\n  <account name> y=<number>\nIf you cannot read something, say so rather than guessing.",
+ "results": [
+  {
+   "model": "google/gemma-4-31b-it:free",
+   "raw": "Assets y=304\nExpenses y=335\nIncome y=366",
+   "parsed": {
+    "assets": 304.0,
+    "expenses": 335.0,
+    "income": 366.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.3189499094749548,
+   "offset": 17.572721786360887,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 94.33333333333333,
+   "mean_abs_error_rows": 3.9305555555555554,
+   "residuals": {
+    "assets": 87.0,
+    "expenses": 94.0,
+    "income": 102.0
+   }
+  },
+  {
+   "model": "google/gemma-4-26b-a4b-it:free",
+   "raw": "Assets y=303\nExpenses y=336\nIncome y=369",
+   "parsed": {
+    "assets": 303.0,
+    "expenses": 336.0,
+    "income": 369.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.4040434520217262,
+   "offset": -1.906457453228768,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 95.33333333333333,
+   "mean_abs_error_rows": 3.972222222222222,
+   "residuals": {
+    "assets": 86.0,
+    "expenses": 95.0,
+    "income": 105.0
+   }
+  },
+  {
+   "model": "minimax/minimax-m3:free",
+   "raw": "Assets y=222\nExpenses y=245\nIncome y=269",
+   "parsed": {
+    "assets": 222.0,
+    "expenses": 245.0,
+    "income": 269.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 0.999698249849125,
+   "offset": 4.739287869643931,
+   "r_squared": 0.9993965907514034,
+   "mean_abs_error_px": 4.666666666666667,
+   "mean_abs_error_rows": 0.19444444444444445,
+   "residuals": {
+    "assets": 5.0,
+    "expenses": 4.0,
+    "income": 5.0
+   }
+  },
+  {
+   "model": "dots-studio/dots-3-note-preview:free",
+   "error": "empty (finish_reason=length)"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "raw": "Assets y=300\nExpenses y=330\nIncome y=360",
+   "parsed": {
+    "assets": 300.0,
+    "expenses": 330.0,
+    "income": 360.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.2764031382015693,
+   "offset": 22.812311406155686,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 89.33333333333333,
+   "mean_abs_error_rows": 3.722222222222222,
+   "residuals": {
+    "assets": 83.0,
+    "expenses": 89.0,
+    "income": 96.0
+   }
+  }
+ ]
+}
