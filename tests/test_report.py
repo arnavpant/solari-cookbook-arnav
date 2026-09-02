@@ -248,3 +248,52 @@ def test_load_localization_pools_every_probe_file(tmp_path):
 
     got = load_localization(d)
     assert sorted(m for m, _ in got["models"]) == ["early", "late"]
+
+
+def test_chart_labels_are_short_because_the_table_carries_the_full_id():
+    """Full model ids are 30-50 characters and collided into an unreadable smear.
+
+    The table directly beneath lists every full id, so the chart only has to make each
+    column identifiable - it is not the source of truth for names.
+    """
+    from cubicle.charts import short_label
+
+    assert short_label("google/gemma-4-26b-a4b-it:free") == "gemma-4-26b"
+    assert short_label("minimax/minimax-m3:free") == "minimax-m3"
+    assert all(len(short_label(m)) <= 16 for m in (
+        "google/gemma-4-31b-it:free", "gemini-flash-latest", "gemini-3.7-flash",
+        "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"))
+
+
+def test_shortening_never_makes_two_models_look_like_one():
+    """gemini-3.5-flash and gemini-3.5-flash-lite are different models that both
+    truncated to "gemini-3.5-flash". A reader comparing columns had no way to tell
+    which was which."""
+    from cubicle.charts import short_label
+
+    models = [
+        "google/gemma-4-31b-it:free", "google/gemma-4-26b-a4b-it:free",
+        "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash",
+        "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-flash-latest",
+        "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", "minimax/minimax-m3:free",
+    ]
+    labels = [short_label(m) for m in models]
+    assert len(set(labels)) == len(labels), f"collision: {labels}"
+
+
+def test_localization_labels_stagger_once_the_columns_get_narrow():
+    """Rotating narrow labels was the first attempt and it clipped: rotated text ran
+    outside the SVG box and lost its leading characters, so every label rendered as
+    "ma-4-31b" instead of "gemma-4-31b". Two staggered rows double the space per
+    label, need no transform, and cannot clip."""
+    import re
+
+    from cubicle.charts import localization_svg
+
+    many = [(f"vendor/model-{i}", [300, 330, 360]) for i in range(10)]
+    svg = localization_svg({"A": 217, "B": 241, "C": 264}, many)
+    assert "rotate(" not in svg, "rotation clips; stagger instead"
+    assert len(set(re.findall(r'class="collabel"[^>]*\by="(\d+)"', svg))) == 2
+
+    one = localization_svg({"A": 217}, [("only-one", [300, 330, 360])])
+    assert len(set(re.findall(r'class="collabel"[^>]*\by="(\d+)"', one))) == 1

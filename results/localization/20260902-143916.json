@@ -1,0 +1,190 @@
+{
+ "screenshot": "setup-verify.png",
+ "truth": {
+  "Assets": 217,
+  "Expenses": 241,
+  "Income": 264
+ },
+ "row_height": 24,
+ "question": "This is a screenshot of the GnuCash accounting application at 1280x720.\n\nList every account name in the account tree, and for each one give the y pixel\ncoordinate of the centre of its row.\n\nAnswer with one line per account, in exactly this form:\n  <account name> y=<number>\nIf you cannot read something, say so rather than guessing.",
+ "results": [
+  {
+   "model": "gemini-3.7-flash",
+   "run": 0,
+   "raw": "Assets y=302\nExpenses y=334\nIncome y=366",
+   "parsed": {
+    "assets": 302.0,
+    "expenses": 334.0,
+    "income": 366.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.3614966807483406,
+   "offset": 6.333132166566031,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 93.33333333333333,
+   "mean_abs_error_rows": 3.888888888888889,
+   "residuals": {
+    "assets": 85.0,
+    "expenses": 93.0,
+    "income": 102.0
+   }
+  },
+  {
+   "model": "gemini-3.6-flash",
+   "run": 0,
+   "raw": "Assets y=302\nExpenses y=334\nIncome y=366",
+   "parsed": {
+    "assets": 302.0,
+    "expenses": 334.0,
+    "income": 366.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.3614966807483406,
+   "offset": 6.333132166566031,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 93.33333333333333,
+   "mean_abs_error_rows": 3.888888888888889,
+   "residuals": {
+    "assets": 85.0,
+    "expenses": 93.0,
+    "income": 102.0
+   }
+  },
+  {
+   "model": "gemini-3.5-flash",
+   "run": 0,
+   "raw": "Assets y=302\nExpenses y=334\nIncome y=366",
+   "parsed": {
+    "assets": 302.0,
+    "expenses": 334.0,
+    "income": 366.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.3614966807483406,
+   "offset": 6.333132166566031,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 93.33333333333333,
+   "mean_abs_error_rows": 3.888888888888889,
+   "residuals": {
+    "assets": 85.0,
+    "expenses": 93.0,
+    "income": 102.0
+   }
+  },
+  {
+   "model": "gemini-3.5-flash-lite",
+   "run": 0,
+   "raw": "Assets y=301\nExpenses y=334\nIncome y=366",
+   "parsed": {
+    "assets": 301.0,
+    "expenses": 334.0,
+    "income": 366.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.3829209414604708,
+   "offset": 0.8436934218466945,
+   "r_squared": 0.999988430847797,
+   "mean_abs_error_px": 93.0,
+   "mean_abs_error_rows": 3.875,
+   "residuals": {
+    "assets": 84.0,
+    "expenses": 93.0,
+    "income": 102.0
+   }
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "run": 0,
+   "raw": "Assets y=303\nExpenses y=333\nIncome y=363",
+   "parsed": {
+    "assets": 303.0,
+    "expenses": 333.0,
+    "income": 363.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.2764031382015693,
+   "offset": 25.812311406155686,
+   "r_squared": 0.9998491249245625,
+   "mean_abs_error_px": 92.33333333333333,
+   "mean_abs_error_rows": 3.847222222222222,
+   "residuals": {
+    "assets": 86.0,
+    "expenses": 92.0,
+    "income": 99.0
+   }
+  },
+  {
+   "model": "gemini-3.1-pro-preview",
+   "run": 0,
+   "error": "HTTP 429: [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing det"
+  },
+  {
+   "model": "gemini-3-flash-preview",
+   "run": 0,
+   "raw": "328.\n    *   Let's re-verify the y-coordinates.\n        *   Assets: text is centered vertically in the orange bar",
+   "parsed": {},
+   "n": 0,
+   "named_correctly": 0,
+   "total_names": 3,
+   "scale": null,
+   "offset": null,
+   "r_squared": null,
+   "mean_abs_error_px": NaN,
+   "mean_abs_error_rows": NaN,
+   "residuals": {}
+  },
+  {
+   "model": "gemini-2.5-flash",
+   "run": 0,
+   "error": "HTTP 404: [{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash is no longer available to new users."
+  },
+  {
+   "model": "gemini-2.5-flash-lite",
+   "run": 0,
+   "error": "HTTP 404: [{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new u"
+  },
+  {
+   "model": "gemini-2.5-pro",
+   "run": 0,
+   "error": "HTTP 404: [{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. P"
+  },
+  {
+   "model": "gemini-flash-latest",
+   "run": 0,
+   "raw": "Assets y=302\nExpenses y=333\nIncome y=365",
+   "parsed": {
+    "assets": 302.0,
+    "expenses": 333.0,
+    "income": 365.0
+   },
+   "n": 3,
+   "named_correctly": 3,
+   "total_names": 3,
+   "scale": 1.3400724200362104,
+   "offset": 10.822570911285368,
+   "r_squared": 0.9995400768190811,
+   "mean_abs_error_px": 92.66666666666667,
+   "mean_abs_error_rows": 3.861111111111111,
+   "residuals": {
+    "assets": 85.0,
+    "expenses": 92.0,
+    "income": 101.0
+   }
+  },
+  {
+   "model": "gemini-pro-latest",
+   "run": 0,
+   "error": "HTTP 429: [{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing det"
+  }
+ ]
+}

@@ -267,6 +267,10 @@ down the page, which is what a scale factor looks like and what an offset does n
 <tbody>{rows}</tbody></table>
 <p class="note">A row is {loc["row_height"]:.0f}px tall. An R&#178; of 1.000 means the
 error is perfectly linear - not noise, and not a constant offset.</p>
+<p class="note"><strong>Count families, not model ids.</strong> Several Gemini entries
+return coordinates identical to the pixel, so they are very likely aliases onto one
+checkpoint and are not independent evidence. Read this as four labs - Google Gemini,
+Google Gemma, NVIDIA and MiniMax - rather than ten models.</p>
 """
 
     ctl_html = ""

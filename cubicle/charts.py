@@ -23,12 +23,42 @@ import html
 import json
 from pathlib import Path
 
+
+def short_label(model: str) -> str:
+    """A compact but identifiable column label.
+
+    Full ids are 30-50 characters and, rotated, ran off the left edge of the SVG and
+    were clipped mid-word. The table directly beneath the chart lists every full id.
+
+    Shortening must never merge two models. gemini-3.5-flash and gemini-3.5-flash-lite
+    are different checkpoints, and a naive truncation gave both the same label - so the
+    variant marker is preserved even when the rest is dropped.
+    """
+    name = str(model).split("/")[-1].replace(":free", "")
+    for suffix in ("-instruct", "-reasoning", "-preview", "-exp", "-it"):
+        if name.endswith(suffix):
+            name = name[: -len(suffix)]
+
+    parts = name.split("-")
+    markers = ("lite", "nano", "mini", "small", "pro", "max", "thinking")
+    variant = next((p for p in parts[2:] if p in markers), None)
+
+    keep = parts[:2]
+    if variant:
+        keep = keep + [variant]
+    elif len(parts) > 2 and len("-".join(parts[:3])) <= 16:
+        keep = parts[:3]
+
+    out = "-".join(keep)
+    return out if len(out) <= 16 else out[:16]
+
+
 LOC_W = 900
 LOC_H = 330
 LOC_PAD_L = 150
 LOC_PAD_R = 40
 LOC_TOP = 44
-LOC_BOT = 34
+LOC_BOT = 62
 
 
 def localization_svg(truth: dict, models: list, height_px: float = 720) -> str:
@@ -83,10 +113,16 @@ def localization_svg(truth: dict, models: list, height_px: float = 720) -> str:
                 '<circle class="claim" data-y="%g" cx="%.1f" cy="%.1f" r="4" '
                 'fill="var(--series)"/>' % (float(y), cx, sy(y))
             )
-        short = html.escape(str(label).split("/")[-1].replace(":free", ""))
+        short = html.escape(short_label(label))
+        # Level labels collide once columns are narrow. Rotating them was the first
+        # attempt and it clipped - rotated text left the SVG box and lost its leading
+        # characters, so "gemma-4-31b" rendered as "ma-4-31b". Two staggered rows give
+        # each label twice the width, need no transform, and cannot clip.
+        row = (i % 2) if col_w < 90 else 0
+        ly = LOC_H - 34 + row * 15
         out.append(
-            '<text x="%.1f" y="%d" text-anchor="middle" font-size="10" '
-            'fill="var(--text-muted)">%s</text>' % (cx, LOC_H - 12, short)
+            '<text class="collabel" x="%.1f" y="%d" text-anchor="middle" font-size="10" '
+            'fill="var(--text-muted)">%s</text>' % (cx, ly, short)
         )
 
     out.append(

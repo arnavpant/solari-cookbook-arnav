@@ -122,15 +122,24 @@ over the positions each model claims:
 |---|---|---|---|---|---|---|
 | **truth** | 217 | 241 | 264 | 1.000 | — | — |
 | gemma-4-26b-a4b | 303 | 336 | 369 | 1.404 | **4.0 rows** | 1.000 |
+| gemini-3.5-flash-lite | 301 | 334 | 366 | 1.383 | **3.9 rows** | 1.000 |
+| gemini-3.5 / 3.6 / 3.7-flash | 302 | 334 | 366 | 1.361 | **3.9 rows** | 1.000 |
+| gemini-flash-latest | 302 | 333 | 365 | 1.340 | **3.9 rows** | 1.000 |
 | gemma-4-31b | 304 | 335 | 366 | 1.319 | **3.9 rows** | 1.000 |
 | Gemini flash-lite | 304 | 334 | 365 | 1.298 | **3.9 rows** | 1.000 |
+| gemini-3.1-flash-lite | 303 | 333 | 363 | 1.276 | **3.8 rows** | 1.000 |
 | nemotron-3-nano-omni | 300 | 330 | 360 | 1.276 | **3.7 rows** | 1.000 |
 | DeepSeek V4 Flash Vision | 230 | 256 | 282 | 1.106 | 0.6 rows | 1.000 |
 | MiniMax-M3 | 222 | 245 | 269 | ~1.0 | 0.2 rows | 0.999 |
 
-Four models from four different labs place a row that is at **y=217** at **y≈300**. R² is
-1.000 in every case: the error is not noise and not a constant offset but a **vertical
-scale factor**, so it grows the further down the screen you look.
+Nine of eleven place a row that is at **y=217** at **y≈300**. R² is 1.000 in every case:
+the error is not noise and not a constant offset but a **vertical scale factor**, so it
+grows the further down the screen you look.
+
+**Count families, not model ids.** Several Gemini entries return coordinates identical
+to the pixel, so they are very likely aliases onto one checkpoint and are not
+independent evidence. Read this as **four labs** — Google Gemini, Google Gemma, NVIDIA
+and MiniMax, plus DeepSeek — rather than eleven models.
 
 **It is not universal, and that matters more than the failures.** MiniMax-M3 has no
 systematic stretch. A benchmark on which every model scores identically measures
