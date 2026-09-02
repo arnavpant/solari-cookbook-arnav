@@ -66,10 +66,11 @@ def test_a_task_result_never_carries_the_raw_session_token():
     from tests.fake_desktop import FakeDesktop
     from tests.test_harness import BOOK_COPY, PASS, ScriptedAgent, make_task
 
-    token = (
-        "REDACTED-SESSION-TOKEN"
-        ".REDACTED-SIGNATURE"
-    )
+    # Shaped like a Solari session id - base64url body, dot, signature - but entirely
+    # invented. Never paste a real one here, even from a destroyed desktop: this file
+    # exists to stop credential shapes reaching the repo, and a fixture is still the
+    # repo.
+    token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ.EXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE"
     d = FakeDesktop()
     d.sessionId = token
     d.fs.files[BOOK_COPY] = seed_bytes("base")
