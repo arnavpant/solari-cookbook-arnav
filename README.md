@@ -423,6 +423,32 @@ Design doc: [`docs/superpowers/specs/2026-09-01-cubicle-design.md`](docs/superpo
 Research notes — the verified Solari API surface, the probe findings behind it and the
 gotchas — are in [`docs/research/`](docs/research/).
 
+## How this was built
+
+**With Claude Code, and the commit history says so** — 51 of 53 commits carry a
+`Co-Authored-By: Claude` trailer. That is worth stating plainly rather than leaving a
+reader to wonder.
+
+What the assistance actually bought was not typing speed. It was the ability to keep
+attacking a result after having it, which is the part that usually gets skipped because
+it is slow and it can only cost you your headline:
+
+| what happened | why it mattered |
+|---|---|
+| Caught that `t02` allowed 15 steps against an oracle needing 12 | The task was effectively unpassable for reasons unrelated to vision. Every cap was raised to 3x the oracle, then the run was repeated — still 0/7 |
+| Caught that the harness never retried a malformed reply, though the design doc said it should | Half of MiniMax's steps were being discarded. That 0/7 was measuring JSON formatting. Fixed, re-run, still 0/7 with the mean click y unchanged |
+| A finding did not reproduce | 17 of 25 off-screen clicks on one run, 0 of 198 on the next. Written up as a retraction rather than deleted |
+| The leaderboard summed every run ever done | It read "oracle 23/25" and made the reference solution look unreliable. It is 7/7 |
+| Suspected several Gemini ids were one model under aliases | Tested it instead of publishing the suspicion. They diverge on a second question, so the agreement is convergence |
+| The raw Solari session token was being written into every `results.json` | A bearer credential, in the artifact this README invites people to publish |
+
+Six corrections, four of which weakened or complicated a number that was already
+written down. None of them were found by a reviewer.
+
+The tests came first throughout: 229 of them, run offline with no API key. Every
+gotcha in `docs/research/05-gotchas.md` is split between *we hit this* and *the docs say
+this*, because those are different kinds of claim.
+
 ## Built with
 
 [Solari](https://www.getsolari.com) — cloud browsers, sandboxes and desktops behind one
